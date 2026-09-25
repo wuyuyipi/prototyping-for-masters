@@ -16,6 +16,12 @@ export default function Home() {
       path: '/prototypes/confetti-button',
       tag: '02 / Interactive'
     },
+    {
+      title: 'Typography experiments',
+      description: 'Typographic experiments and interactive explorations',
+      path: '/prototypes/typography-experiments',
+      tag: '03 / Experiment'
+    },
     // Add your new prototypes here like this:
     // {
     //   title: 'Your new prototype',
@@ -51,20 +57,6 @@ export default function Home() {
   return (
     <div className={styles.mainContainer}>
 
-      {/* Background "Prototypes" Typographic Watermark behind .main */}
-      <div className={styles.bgPrototypesWatermark} aria-hidden="true">
-        Prototypes
-      </div>
-
-      {/* Background Signature Overlay at bottom-right */}
-      <div className={styles.bgSignature} aria-hidden="true">
-        <img 
-          src="/img/Yiping.svg" 
-          alt="" 
-          className={styles.bgSignatureImg} 
-        />
-      </div>
-
       {/* Floating Bottom Course & Copyright Tag */}
       <div className={styles.footerContainer}>
         <span className={styles.footerText}>
@@ -78,6 +70,32 @@ export default function Home() {
           {/* Top Meta Badges Row */}
           <header className={styles.headerMetaRow}>
             <span className={styles.headerBadge}>YIPING DONG</span>
+            <a 
+              href="https://yipingdong.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className={styles.headerExternalLink}
+              title="Visit www.yipingdong.com"
+              aria-label="Visit Yiping Dong's website at www.yipingdong.com"
+            >
+              <svg 
+                className={styles.headerExternalLinkIcon} 
+                viewBox="0 0 24 24" 
+                width="18" 
+                height="18" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                <path d="M2 12h20" />
+              </svg>
+              <span className={styles.headerExternalLinkArrow}>↗</span>
+            </a>
             <span className={styles.headerSubTag}>Prototyping for Masters</span>
           </header>
 

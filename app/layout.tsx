@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { nyghtSerif, hostGrotesk } from "./fonts";
 import "./styles/globals.css";
+import GlobalBackground from "./components/GlobalBackground";
+import MusicPlayer from "./components/MusicPlayer";
 
 export const metadata: Metadata = {
   title: "Yiping Dong | Prototypes",
@@ -26,7 +28,16 @@ export default function RootLayout({
           className="fixed-bg-paint" 
           aria-hidden="true" 
         />
-        {children}
+        {/* Persistent background watermark and signature across all pages */}
+        <GlobalBackground />
+
+        {/* Persistent floating music player (CD icon) across all pages */}
+        <MusicPlayer />
+
+        {/* Page content with white boxes stacked above background elements */}
+        <div className="page-content-wrapper">
+          {children}
+        </div>
       </body>
     </html>
   );

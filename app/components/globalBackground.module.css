@@ -1,0 +1,58 @@
+/* Fixed Background Watermark & Signature Elements */
+
+.bgPrototypesWatermark {
+  position: fixed;
+  top: 1vh;
+  left: 1.5vw;
+  font-family: var(--font-serif);
+  font-size: clamp(3.2rem, 6.5vw, 5.6rem);
+  font-weight: 700;
+  line-height: 0.9;
+  color: #0C4F56;
+  opacity: 0.65;
+  mix-blend-mode: multiply;
+  letter-spacing: -0.02em;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.bgSignature {
+  position: fixed;
+  bottom: -2vh;
+  right: -1.5vw;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}
+
+.bgSignatureImg {
+  width: clamp(280px, 26vw, 400px);
+  height: auto;
+  display: block;
+  opacity: 0.65;
+  mix-blend-mode: multiply;
+}
+
+@media (max-width: 900px) {
+  .bgSignature {
+    bottom: -1.5vh;
+    right: -2vw;
+  }
+
+  .bgSignatureImg {
+    width: clamp(220px, 30vw, 340px);
+  }
+}
+
+@media (max-width: 600px) {
+  .bgSignature {
+    bottom: -1vh;
+    right: -3vw;
+  }
+
+  .bgSignatureImg {
+    width: clamp(160px, 40vw, 240px);
+  }
+}

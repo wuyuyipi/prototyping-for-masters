@@ -91,3 +91,10 @@ h1, h2, h3, h4, h5, h6 {
 #root, #__next {
   isolation: isolate;
 }
+
+/* Page content wrapper ensuring white boxes and content sit above background watermark and signature */
+.page-content-wrapper {
+  position: relative;
+  z-index: 2;
+  isolation: isolate;
+}

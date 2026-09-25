@@ -1,0 +1,771 @@
+/* Cutting-Mat & Printmaker Typography Experiments Styling */
+
+.container {
+  min-height: 100vh;
+  padding: 2.5vh 2.5vw 10vh 2.5vw;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+}
+
+.mainFrame {
+  width: 95vw;
+  max-width: 1200px;
+  background-color: #FFFFFF;
+  border: 2px solid #1A2628;
+  padding: 2.5rem 3rem 4rem 3rem;
+  box-sizing: border-box;
+  position: relative;
+  box-shadow: 6px 6px 0px rgba(12, 79, 86, 0.25);
+}
+
+/* Top Navigation Bar */
+.topNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1.5px solid #1A2628;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  color: #1A2628;
+  text-decoration: none;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.backButton:hover {
+  background-color: #ED6A85;
+  transform: translate(-2px, -2px);
+}
+
+.backButton:active {
+  transform: translate(1px, 1px);
+}
+
+.categoryBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #ED6A85;
+  color: #1A2628;
+  border: 1.5px solid #1A2628;
+  padding: 0.4rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.squareBullet {
+  width: 6px;
+  height: 6px;
+  background-color: #1A2628;
+  display: inline-block;
+}
+
+/* Header Section */
+.headerSection {
+  margin-bottom: 2.25rem;
+}
+
+.projectTitle {
+  font-family: var(--font-serif);
+  font-size: 2.75rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #1A2628;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.projectSubtitle {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  color: #4A5F62;
+  max-width: 780px;
+  line-height: 1.6;
+}
+
+.instructionCallout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(72, 167, 172, 0.12);
+  border: 1px dashed #48A7AC;
+  font-size: 0.88rem;
+  color: #0C4F56;
+  font-weight: 600;
+}
+
+/* Interactive Controls Toolbar */
+.controlsBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  background-color: #F8FBFA;
+  border: 1.5px solid #1A2628;
+  margin-bottom: 2rem;
+}
+
+.controlsGroupLeft {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.controlItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.controlLabel {
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #1A2628;
+}
+
+.modeToggleGroup {
+  display: inline-flex;
+  border: 1.5px solid #1A2628;
+  background-color: #FFFFFF;
+}
+
+.modeToggleButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  background-color: #FFFFFF;
+  border: none;
+  border-right: 1.5px solid #1A2628;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #1A2628;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.modeToggleButton:last-child {
+  border-right: none;
+}
+
+.modeToggleButton:hover:not(.modeToggleButtonActive) {
+  background-color: #F0F4F4;
+}
+
+.modeToggleButtonActive {
+  background-color: #1A2628;
+  color: #FFFFFF;
+}
+
+.modeIcon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.sliderInput {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 90px;
+  height: 6px;
+  background: #CBDAD9;
+  border: 1px solid #1A2628;
+  outline: none;
+  cursor: pointer;
+}
+
+.sliderInput::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #ED6A85;
+  border: 1.5px solid #1A2628;
+  cursor: pointer;
+}
+
+.sliderInput::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: #ED6A85;
+  border: 1.5px solid #1A2628;
+  cursor: pointer;
+}
+
+.valueIndicator {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #0C4F56;
+  min-width: 28px;
+}
+
+/* Playlist Song Track Chips */
+.playlistChipsContainer {
+  margin-bottom: 2rem;
+}
+
+.playlistHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.playlistLabel {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #1A2628;
+}
+
+.playlistScrollRow {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  scrollbar-width: thin;
+}
+
+.trackChip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  color: #1A2628;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.trackChip:hover {
+  background-color: rgba(237, 106, 133, 0.2);
+  transform: translateY(-1px);
+}
+
+.trackChipActive {
+  background-color: #1A2628;
+  color: #FFFFFF;
+}
+
+.trackChipIcon {
+  font-size: 0.72rem;
+  color: #ED6A85;
+}
+
+.trackChipActive .trackChipIcon {
+  color: #48A7AC;
+}
+
+/* Lyrics Wave Stage Area */
+.stageContainer {
+  background-color: #FAFDFD;
+  border: 2px solid #1A2628;
+  padding: 3rem 2.5rem;
+  margin-bottom: 2.5rem;
+  min-height: 480px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 15px rgba(12, 79, 86, 0.04);
+}
+
+.stageTrackMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px dashed rgba(26, 38, 40, 0.25);
+}
+
+.stageTrackTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stageTrackTitle {
+  font-family: var(--font-serif);
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #1A2628;
+}
+
+.stageTrackArtist {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  color: #4A5F62;
+  font-weight: 600;
+}
+
+.cdSyncBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  background-color: rgba(72, 167, 172, 0.15);
+  border: 1px solid #48A7AC;
+  padding: 0.2rem 0.6rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #0C4F56;
+}
+
+.cdMiniDisc {
+  font-size: 0.85rem;
+  display: inline-block;
+  line-height: 1;
+}
+
+.cdMiniDiscSpinning {
+  animation: miniSpin 2.5s linear infinite;
+}
+
+@keyframes miniSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.stageActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.playTrackButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.2rem;
+  background-color: #ED6A85;
+  border: 1.5px solid #1A2628;
+  color: #1A2628;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px #1A2628;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.playTrackButton:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #1A2628;
+}
+
+.playTrackButton:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px #1A2628;
+}
+
+.spotifyBadgeLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.85rem;
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  color: #1A2628;
+  text-decoration: none;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  transition: background-color 0.15s ease;
+}
+
+.spotifyBadgeLink:hover {
+  background-color: #48A7AC;
+  color: #FFFFFF;
+}
+
+.shuffleButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  color: #1A2628;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.shuffleButton:hover {
+  background-color: #ED6A85;
+  transform: translate(-1px, -1px);
+}
+
+.shuffleButton:active {
+  transform: translate(1px, 1px);
+}
+
+/* Wavy Lyrics Content */
+.lyricsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  user-select: none;
+  cursor: pointer;
+}
+
+.lyricRow {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  padding: 0.35rem 0.75rem;
+  border-left: 2px solid transparent;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.lyricRowHovered {
+  border-left-color: #ED6A85;
+  background-color: rgba(237, 106, 133, 0.04);
+}
+
+.lyricRowCurrent {
+  border-left-color: #48A7AC;
+  background-color: rgba(72, 167, 172, 0.06);
+}
+
+.lineTimestamp {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #4A5F62;
+  margin-right: 1.25rem;
+  min-width: 46px;
+  display: inline-flex;
+  align-items: center;
+  padding-top: 0.85rem;
+  opacity: 0.35;
+  transition: opacity 0.2s ease, color 0.2s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.lyricRowHovered .lineTimestamp {
+  opacity: 0.9;
+  color: #ED6A85;
+}
+
+.lyricRowCurrent .lineTimestamp {
+  opacity: 1;
+  color: #48A7AC;
+  font-weight: 700;
+}
+
+.lyricLine {
+  display: flex;
+  flex-wrap: wrap;
+  line-height: 1.6;
+  position: relative;
+  transition: color 0.2s ease;
+  flex-grow: 1;
+  pointer-events: none;
+}
+
+.lyricLineActive {
+  color: #0C4F56;
+}
+
+.lyricLineHovered {
+  color: #1A2628;
+}
+
+.charSpan {
+  display: inline-block;
+  transform-origin: bottom center;
+  transition: transform 0.05s linear, font-weight 0.06s ease, opacity 0.06s ease, filter 0.06s ease;
+  will-change: transform, opacity, filter;
+  pointer-events: none;
+}
+
+.serifFont {
+  font-family: var(--font-serif);
+  font-size: 2.15rem;
+  letter-spacing: 0.02em;
+}
+
+.sansFont {
+  font-family: var(--font-sans);
+  font-size: 2.05rem;
+  letter-spacing: 0.01em;
+}
+
+/* Floating Sticky Audio Player Bar */
+.playerStickyBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #FFFFFF;
+  border-top: 2px solid #1A2628;
+  padding: 0.85rem 3vw;
+  box-shadow: 0 -4px 16px rgba(12, 79, 86, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  z-index: 50;
+  box-sizing: border-box;
+}
+
+.playerTrackMeta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 240px;
+}
+
+.playerCover {
+  width: 48px;
+  height: 48px;
+  border: 1.5px solid #1A2628;
+  object-fit: cover;
+}
+
+.playerTrackText {
+  display: flex;
+  flex-direction: column;
+}
+
+.playerTrackTitle {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1A2628;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.playerTrackArtist {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: #4A5F62;
+  font-weight: 500;
+}
+
+.playerControlsCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  flex-grow: 1;
+  max-width: 580px;
+}
+
+.playerButtonsRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.playerRoundButton {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #ED6A85;
+  border: 1.5px solid #1A2628;
+  color: #1A2628;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+.playerRoundButton:hover {
+  background-color: #F27B94;
+  transform: scale(1.05);
+}
+
+.playerNavButton {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #1A2628;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.15s ease;
+}
+
+.playerNavButton:hover {
+  color: #ED6A85;
+}
+
+.playerModeButton {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #1A2628;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.15s ease;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.playerModeButton:hover {
+  color: #ED6A85;
+}
+
+.playerModeButtonActive {
+  background: none;
+  border: none;
+  color: #1A2628;
+}
+
+.progressBarContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.timeText {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #4A5F62;
+  min-width: 34px;
+}
+
+.progressTrack {
+  flex-grow: 1;
+  height: 6px;
+  background-color: #E2ECEB;
+  border: 1px solid #1A2628;
+  cursor: pointer;
+  position: relative;
+}
+
+.progressFilled {
+  height: 100%;
+  background-color: #48A7AC;
+  transition: width 0.1s linear;
+}
+
+/* Playing Equalizer Animation */
+.equalizerContainer {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 18px;
+}
+
+.equalizerBar {
+  width: 3px;
+  background-color: #48A7AC;
+  border: 0.5px solid #1A2628;
+  animation: equalize 0.8s infinite ease-in-out alternate;
+}
+
+.equalizerBar:nth-child(1) { height: 60%; animation-delay: 0.1s; }
+.equalizerBar:nth-child(2) { height: 100%; animation-delay: 0.3s; }
+.equalizerBar:nth-child(3) { height: 40%; animation-delay: 0.5s; }
+.equalizerBar:nth-child(4) { height: 80%; animation-delay: 0.2s; }
+
+@keyframes equalize {
+  0% { transform: scaleY(0.3); }
+  100% { transform: scaleY(1); }
+}
+
+/* Floating Bottom Course Tag */
+.footerContainer {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footerText {
+  color: #1A2628;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.footerTag {
+  background-color: #ED6A85;
+  color: #1A2628;
+  border: 1.5px solid #1A2628;
+  padding: 3px 10px;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .mainFrame {
+    padding: 1.5rem;
+  }
+  .projectTitle {
+    font-size: 2rem;
+  }
+  .stageContainer {
+    padding: 1.5rem 1rem;
+  }
+  .serifFont {
+    font-size: 1.45rem;
+  }
+  .sansFont {
+    font-size: 1.35rem;
+  }
+  .playerStickyBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  .playerTrackMeta {
+    min-width: 0;
+  }
+}

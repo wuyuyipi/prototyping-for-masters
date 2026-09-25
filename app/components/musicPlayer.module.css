@@ -1,0 +1,456 @@
+/* Floating Music Player & CD Icon Component */
+
+.container {
+  position: fixed;
+  top: 1.5rem;
+  right: 2rem;
+  z-index: 100;
+}
+
+/* Floating Circular CD Button */
+.cdButton {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  border: 2px solid #1A2628;
+  box-shadow: 2px 3px 0px #1A2628;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background-color 0.2s ease;
+  position: relative;
+  outline: none;
+}
+
+.cdButton:hover {
+  transform: translate(-2px, -2px) scale(1.05);
+  box-shadow: 4px 5px 0px #1A2628;
+  background-color: #FFF0F3;
+}
+
+.cdButton:focus-visible {
+  outline: 2px solid #ED6A85;
+  outline-offset: 3px;
+}
+
+/* Spinning disc artwork */
+.cdDisc {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s ease;
+}
+
+/* Continuously spin when playlist is open */
+.spinning {
+  animation: discRotation 6s linear infinite;
+}
+
+@keyframes discRotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Subtle active glowing badge on CD (visible when window is open) */
+.activeDot {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 12px;
+  height: 12px;
+  background-color: #ED6A85;
+  border: 2px solid #1A2628;
+  border-radius: 50%;
+  animation: pulse 1.8s infinite;
+  z-index: 5;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(237, 106, 133, 0.7);
+  }
+  70% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 5px rgba(237, 106, 133, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(237, 106, 133, 0);
+  }
+}
+
+/* Musical Notes Floating Animation when music is playing */
+.notesContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  user-select: none;
+}
+
+.note {
+  position: absolute;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+  color: #FFFFFF;
+  text-shadow: 
+    -1px -1px 0 #1A2628,
+     1px -1px 0 #1A2628,
+    -1px  1px 0 #1A2628,
+     1px  1px 0 #1A2628,
+     0 2px 4px rgba(26, 38, 40, 0.4);
+}
+
+/* Note 1: Eighth note ♪ - immediately drifts upward with gentle sway */
+.note1 {
+  top: 8px;
+  left: 6px;
+  font-size: 1.3rem;
+  animation: floatNote1 4.5s linear infinite;
+  animation-delay: 0s;
+}
+
+/* Note 2: Beamed eighth note ♫ - floats center-up immediately */
+.note2 {
+  top: 2px;
+  right: 12px;
+  font-size: 1.45rem;
+  animation: floatNote2 4.8s linear infinite;
+  animation-delay: 1.2s;
+}
+
+/* Note 3: Quarter note ♩ - floats up-left immediately */
+.note3 {
+  bottom: 12px;
+  left: -2px;
+  font-size: 1.25rem;
+  animation: floatNote3 4.4s linear infinite;
+  animation-delay: 2.4s;
+}
+
+/* Note 4: Beamed sixteenth note ♬ - floats up-right immediately */
+.note4 {
+  top: 10px;
+  right: -2px;
+  font-size: 1.35rem;
+  animation: floatNote4 5.0s linear infinite;
+  animation-delay: 3.6s;
+}
+
+@keyframes floatNote1 {
+  0% {
+    opacity: 0;
+    transform: translate(0px, 0px) scale(0.65) rotate(0deg);
+  }
+  8% {
+    opacity: 1;
+  }
+  25% {
+    transform: translate(-8px, -24px) scale(0.9) rotate(-8deg);
+  }
+  50% {
+    transform: translate(-16px, -48px) scale(1.05) rotate(-14deg);
+  }
+  75% {
+    opacity: 0.9;
+    transform: translate(-10px, -72px) scale(1.15) rotate(-8deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-18px, -96px) scale(1.2) rotate(-16deg);
+  }
+}
+
+@keyframes floatNote2 {
+  0% {
+    opacity: 0;
+    transform: translate(0px, 0px) scale(0.65) rotate(0deg);
+  }
+  8% {
+    opacity: 1;
+  }
+  25% {
+    transform: translate(8px, -26px) scale(0.95) rotate(6deg);
+  }
+  50% {
+    transform: translate(16px, -52px) scale(1.1) rotate(12deg);
+  }
+  75% {
+    opacity: 0.9;
+    transform: translate(10px, -78px) scale(1.2) rotate(6deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(14px, -104px) scale(1.25) rotate(14deg);
+  }
+}
+
+@keyframes floatNote3 {
+  0% {
+    opacity: 0;
+    transform: translate(0px, 0px) scale(0.65) rotate(0deg);
+  }
+  8% {
+    opacity: 1;
+  }
+  25% {
+    transform: translate(-10px, -22px) scale(0.9) rotate(-10deg);
+  }
+  50% {
+    transform: translate(-20px, -44px) scale(1.05) rotate(-18deg);
+  }
+  75% {
+    opacity: 0.9;
+    transform: translate(-14px, -66px) scale(1.15) rotate(-10deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-24px, -88px) scale(1.2) rotate(-22deg);
+  }
+}
+
+@keyframes floatNote4 {
+  0% {
+    opacity: 0;
+    transform: translate(0px, 0px) scale(0.65) rotate(0deg);
+  }
+  8% {
+    opacity: 1;
+  }
+  25% {
+    transform: translate(10px, -24px) scale(0.9) rotate(8deg);
+  }
+  50% {
+    transform: translate(18px, -48px) scale(1.08) rotate(16deg);
+  }
+  75% {
+    opacity: 0.9;
+    transform: translate(12px, -72px) scale(1.18) rotate(10deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(16px, -96px) scale(1.25) rotate(18deg);
+  }
+}
+
+/* Tooltip on hover */
+.tooltip {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 12px);
+  transform: translateY(-50%);
+  background-color: #1A2628;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.cdButton:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(-2px);
+}
+
+/* Floating Spotify Playlist Popover Card */
+.popover {
+  position: absolute;
+  top: calc(100% + 14px);
+  right: 0;
+  width: 360px;
+  max-width: calc(100vw - 2.5rem);
+  background-color: #FFFFFF;
+  border: 2px solid #1A2628;
+  border-radius: 16px;
+  box-shadow: 5px 6px 0px #1A2628;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform-origin: top right;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+              visibility 0.22s ease;
+}
+
+.popoverVisible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: scale(1) translateY(0);
+}
+
+.popoverHidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(0.92) translateY(-8px);
+}
+
+/* Popover Header */
+.popoverHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background-color: #FFFFFF;
+  border-bottom: 2px solid #1A2628;
+}
+
+.headerTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.playlistBadge {
+  background-color: #ED6A85;
+  color: #1A2628;
+  border: 1px solid #1A2628;
+  padding: 2px 8px;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: 4px;
+}
+
+.playlistSub {
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #4A5F62;
+}
+
+.playingPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #ED6A85;
+  color: #1A2628;
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #1A2628;
+}
+
+.playingPillDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  animation: pulse 1.2s infinite;
+}
+
+.closeButton {
+  background: none;
+  border: 1.5px solid transparent;
+  border-radius: 6px;
+  color: #1A2628;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.closeButton:hover {
+  background-color: #ED6A85;
+  border-color: #1A2628;
+  transform: rotate(90deg);
+}
+
+.closeButton:focus-visible {
+  outline: 2px solid #ED6A85;
+}
+
+/* Popover Body / Iframe Container */
+.popoverBody {
+  padding: 12px;
+  background-color: #FAFBFB;
+}
+
+.spotifyIframe {
+  border-radius: 12px;
+  display: block;
+  border: none;
+}
+
+/* Responsive Styles */
+@media (max-width: 900px) {
+  .container {
+    top: 1.2rem;
+    right: 1.2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    top: 0.85rem;
+    right: 0.85rem;
+  }
+
+  .cdButton {
+    width: 44px;
+    height: 44px;
+  }
+
+  .popover {
+    position: fixed;
+    top: auto;
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
+    width: auto;
+    max-width: none;
+    box-shadow: 0 8px 24px rgba(26, 38, 40, 0.35);
+    transform-origin: bottom center;
+  }
+
+  .popoverVisible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .popoverHidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(16px);
+  }
+}
