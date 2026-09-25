@@ -1,5 +1,6 @@
-/* CSS Reset */
-/* 1. Use a more-intuitive box-sizing model */
+/* CSS Reset & Global Tokens matching yipingdong.com */
+
+/* 1. Intuitive box-sizing */
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -7,44 +8,86 @@
 /* 2. Remove default margin */
 * {
   margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-mat-bg: #48A7AC;
+  --color-mat-grid: rgba(255, 255, 255, 0.45);
+  --color-pink: #ED6A85;
+  --color-pink-hover: #F27B94;
+  --color-dark-teal: #0C4F56;
+  --color-ink: #1A2628;
+  --color-muted: #4A5F62;
+  --color-surface: #FFFFFF;
+  --font-serif: var(--font-nyght-serif), Georgia, serif;
+  --font-sans: var(--font-host-grotesk), system-ui, -apple-system, sans-serif;
+}
+
+html, body {
+  background-color: var(--color-mat-bg);
+  background-image: 
+    linear-gradient(var(--color-mat-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-mat-grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-attachment: fixed;
+  min-height: 100vh;
 }
 
 body {
-  /* 3. Add accessible line-height */
   line-height: 1.5;
-  /* 4. Improve text rendering */
   -webkit-font-smoothing: antialiased;
-  /* 5. Set default font */
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
 }
 
-/* 5. Improve media defaults */
+/* Fixed background paint effect covering entire viewport */
+.fixed-bg-paint {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Custom selection style */
+::selection {
+  background: var(--color-pink);
+  color: #FFFFFF;
+}
+
+/* Invert highlight to cutting-mat teal on pink boxes/badges */
+[class*="headerBadge"]::selection,
+[class*="sectionBadge"]::selection,
+[class*="footerTag"]::selection {
+  background: var(--color-mat-bg);
+  color: #FFFFFF;
+}
+
 img, picture, video, canvas, svg {
   display: block;
   max-width: 100%;
 }
 
-/* 6. Inherit fonts for form controls */
 input, button, textarea, select {
   font: inherit;
 }
 
-/* 7. Avoid text overflows */
 p, h1, h2, h3, h4, h5, h6 {
   overflow-wrap: break-word;
 }
 
-/* 8. Improve line wrapping */
 p {
   text-wrap: pretty;
 }
+
 h1, h2, h3, h4, h5, h6 {
   text-wrap: balance;
 }
 
-/*
-  9. Create a root stacking context
-*/
 #root, #__next {
   isolation: isolate;
-} 
+}

@@ -1,19 +1,61 @@
+/* Cutting-Mat & Printmaker Styling - Prototype Template */
+
 .container {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 2rem;
+  min-height: 100vh;
+  padding: 3vh 3vw;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.section {
-  margin-top: 2rem;
+.mainFrame {
+  width: 92vw;
+  max-width: 1100px;
+  min-height: 85vh;
+  background-color: #FFFFFF;
+  border: 2px solid #1A2628;
+  padding: 2.5rem;
+  box-sizing: border-box;
+  position: relative;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.list {
-  margin-top: 1rem;
-  margin-left: 1.5rem;
-  line-height: 1.6;
+.mainFrame::-webkit-scrollbar {
+  display: none;
 }
 
-.list li {
-  margin-bottom: 0.5rem;
+.buttonContainer {
+  margin-bottom: 2rem;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  color: #1A2628;
+  text-decoration: none;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.backButton:hover {
+  background-color: #ED6A85;
+  transform: translate(-2px, -2px);
+}
+
+.backButton:active {
+  transform: translate(1px, 1px);
+}
+
+.main {
+  width: 100%;
 }

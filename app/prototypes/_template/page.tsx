@@ -4,8 +4,7 @@
 // To use this template:
 // 1. Create a new folder in app/prototypes with your prototype name
 // 2. Copy this file and styles.module.css into your new folder
-// 3. Create an 'images' folder for your prototype's images
-// 4. Rename and customize the component and styles as needed
+// 3. Rename and customize the component and styles as needed
 
 import Link from 'next/link';
 import styles from './styles.module.css';
@@ -13,9 +12,18 @@ import styles from './styles.module.css';
 export default function PrototypeTemplate() {
   return (
     <div className={styles.container}>
-      <main className={styles.main}>
-        {/* Add your prototype content here */}
-      </main>
+      <div className={styles.mainFrame}>
+        <div className={styles.buttonContainer}>
+          <Link href="/" className={styles.backButton}>
+            <span>←</span>
+            <span>Prototypes</span>
+          </Link>
+        </div>
+
+        <main className={styles.main}>
+          {/* Add your prototype content here */}
+        </main>
+      </div>
     </div>
   );
-} 
+}

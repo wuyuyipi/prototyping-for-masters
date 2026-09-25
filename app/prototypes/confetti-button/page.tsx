@@ -11,12 +11,13 @@ export default function ConfettiButtonPrototype() {
   const triggerConfetti = () => {
     setIsAnimating(true);
     
+    // Confetti matching cutting-mat & riso personal branding palette
     confetti({
-      particleCount: 100,
-      spread: 100,
+      particleCount: 110,
+      spread: 90,
       origin: { y: 0.6 },
-      colors: ['#FF69B4', '#00FFFF', '#9932CC'], // Pink, bright aqua, purple
-      shapes: ['square'], // Keep the square particles for the pixel look
+      colors: ['#ED6A85', '#48A7AC', '#0C4F56', '#1A2628', '#FFFFFF'],
+      shapes: ['square'],
     });
 
     setTimeout(() => setIsAnimating(false), 300);
@@ -24,24 +25,43 @@ export default function ConfettiButtonPrototype() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.buttonContainer}>
-        <Link href="/" className={styles.backButton}>←</Link>
+
+
+      {/* Floating Bottom Course Tag */}
+      <div className={styles.footerContainer}>
+        <span className={styles.footerText}>
+          © 2026 Yiping Dong
+        </span>
+        <span className={styles.footerTag}>02 / Interactive</span>
       </div>
-      
-      <div className={styles.window}>
-        <div className={styles.windowTitle}>
-          Confetti button
-        </div>
-        <div className={styles.windowContent}>
-          <h1 className={styles.title}>Congratulations! You have set up your first repository.</h1>
+
+      {/* Central Framed Window */}
+      <div className={styles.main}>
+        <Link href="/" className={styles.backButton}>
+          <span>←</span>
+          <span>Prototypes</span>
+        </Link>
+
+        <div className={styles.frameCard}>
+          <div className={styles.categoryBadge}>
+            <span className={styles.squareBullet} />
+            <span>Interactive Experiment</span>
+          </div>
+
+          <h1 className={styles.title}>Congratulations!</h1>
+
+          <p className={styles.description}>
+            You have set up your first prototype repository. Click below to celebrate!
+          </p>
+
           <button 
-            className={`${styles.confettiButton} ${isAnimating ? styles.animate : ''}`}
+            className={`${styles.celebrateButton} ${isAnimating ? styles.animate : ''}`}
             onClick={triggerConfetti}
           >
-            Celebrate
+            <span>Celebrate ✦</span>
           </button>
         </div>
       </div>
     </div>
   );
-} 
+}
