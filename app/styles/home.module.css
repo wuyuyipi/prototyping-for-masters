@@ -105,7 +105,7 @@
 .headerMetaRow {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   margin-bottom: 2rem;
 }
@@ -133,6 +133,7 @@
   font-size: 0.82rem;
   font-weight: 500;
   margin-left: auto;
+  line-height: 1.2;
 }
 
 /* Hero Display */
