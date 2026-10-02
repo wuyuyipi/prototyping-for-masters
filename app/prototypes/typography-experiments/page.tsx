@@ -415,7 +415,7 @@ export default function TypographyExperimentsPrototype() {
             return i;
           }
         }
-        return 0;
+        return -1;
       })()
     : -1;
 

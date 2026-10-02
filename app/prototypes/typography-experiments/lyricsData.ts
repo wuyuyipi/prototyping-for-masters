@@ -26,7 +26,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/0RzD2Vau0Buhf4nes3mrIE",
     previewUrl: "https://p.scdn.co/mp3-preview/477bba535df24c182b15a2c1da3dfcd630a3f2d0",
     coverUrl: "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02c4da7a63774627ac1cd76173",
-    timestamps: [0.0, 7.5, 14.0, 20.5],
+    timestamps: [4.5, 11.1, 17.2, 22.3],
     lyrics: [
       "大袈裟な夢に気後れして",
       "でも目指さずにはいられなくて",
@@ -42,7 +42,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/6q2JwrbgKHiaavdsPT6LlG",
     previewUrl: "https://p.scdn.co/mp3-preview/4bbc889ad944d9243cd8269a9e17e4a77c1224e1",
     coverUrl: "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02fb94ccf068db7f1122867cea",
-    timestamps: [7.7, 14.6, 20.9, 25.0],
+    timestamps: [7.2, 14.4, 20.9, 27.8],
     lyrics: [
       "どれくらいの覚悟で いつも立っているかを",
       "お前はまだ知らない 知ろうともしないさ",
@@ -58,7 +58,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/0gdxYJbgWdSEXo5EMVFpgs",
     previewUrl: "https://p.scdn.co/mp3-preview/1c7c8a3cac118f8f259b74024d5557ee6f5a38de",
     coverUrl: "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02c9ebd8143c1f326a4b40174c",
-    timestamps: [0.0, 6.2, 10.0, 13.6, 18.0, 22.0],
+    timestamps: [0.0, 5.8, 9.8, 13.4, 17.8, 22.6],
     lyrics: [
       "リミットなら超えた 掴みにいこうじゃないか",
       "回想に耽って過去を覗いて",
@@ -76,7 +76,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/0MjSBRe2cE2sNx1ZLpnwdh",
     previewUrl: "https://p.scdn.co/mp3-preview/6c39e542bcd57e783fe27dce6a956c4ec53f7242",
     coverUrl: "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e0258184a3644028a545641999e",
-    timestamps: [0.0, 3.5, 6.3, 10.5],
+    timestamps: [0.0, 4.9, 6.1, 8.8],
     lyrics: [
       "酸いも甘いも全部",
       "しるべに変えて",
@@ -92,7 +92,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/6jmpRE8C27breHqbZzI3El",
     previewUrl: "https://p.scdn.co/mp3-preview/146c5d3d301ba99c22ae55cddff6c57e17b81c83",
     coverUrl: "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02a43f66b05420878c7507b83a",
-    timestamps: [0.0, 6.0, 12.0, 16.0, 23.0],
+    timestamps: [0.0, 6.0, 11.9, 16.2, 22.9],
     lyrics: [
       "誰のものでもなく 自分の声で告げた",
       "足跡の確かな今日も 追い風になってゆく",
@@ -109,7 +109,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/3pTkYjWyOMgwPYCOwDV2dB",
     previewUrl: "https://p.scdn.co/mp3-preview/4e77f2932ecbeb1a7974d2d22ab7fa6b957972a2",
     coverUrl: "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e0210a2d1cd613890dbd226c7be",
-    timestamps: [3.3, 12.0, 14.5, 20.0, 24.0],
+    timestamps: [3.2, 12.2, 14.4, 19.8, 23.6],
     lyrics: [
       "You and me Lady 不安に満ちた",
       "I got a hold on you baby",
@@ -126,7 +126,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/5xKTQScQGkjAPC0jUcY4Bs",
     previewUrl: "https://p.scdn.co/mp3-preview/fec97533468706bb773f867291679097d038a1e6",
     coverUrl: "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e0258dca2f47ca4fbe225a1b7a1",
-    timestamps: [0.0, 4.0, 9.0, 15.0, 20.0],
+    timestamps: [0.0, 1.5, 3.4, 15.1, 20.8],
     lyrics: [
       "錆びた枷 噛み千切れ",
       "群れるな 止まるな",
@@ -143,7 +143,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/4wvKYQrcKR8aSyD3D9xYUS",
     previewUrl: "https://p.scdn.co/mp3-preview/70be6a88f8de4415738cede5affe4fe79c7199fe",
     coverUrl: "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0297e3a8b382a8caa1e3405ba9",
-    timestamps: [0.0, 4.0, 7.5, 11.0, 14.0],
+    timestamps: [0.0, 2.8, 5.0, 11.0, 14.2],
     lyrics: [
       "舞い踊れや C'mon Carnival",
       "はじまりの鐘鳴らせ",
@@ -160,7 +160,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/6eBfkOqgnnO50sDhSHYYxY",
     previewUrl: "https://p.scdn.co/mp3-preview/11ec1d89299ee4c966d42a4a773a7c20df49d0c9",
     coverUrl: "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e0202287433c1868d0c6640cddb",
-    timestamps: [0.0, 7.5, 11.0, 14.6, 18.0, 22.0],
+    timestamps: [0.0, 7.3, 11.0, 14.4, 17.9, 21.5],
     lyrics: [
       "一瞬の瞬きも見つめてくれるから",
       "大袈裟な愛で世界が変わる",
@@ -178,7 +178,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/12iBQN3bsX0ExwgCZ3BAoY",
     previewUrl: "https://p.scdn.co/mp3-preview/4704387955404f354b7ae42d9a6e3f27ab29f8ff",
     coverUrl: "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e0297d70e35ce1fcfd82e5163c6",
-    timestamps: [3.9, 8.2, 14.8, 18.2, 24.7],
+    timestamps: [3.8, 8.0, 14.5, 18.1, 24.6],
     lyrics: [
       "おいでよ 誰かが僕を笑っている",
       "体中に耳がついちゃって ノイズの雨を降らしてよ",
@@ -195,7 +195,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/0QWm3Z36I1OllNv8g2fgXv",
     previewUrl: "https://p.scdn.co/mp3-preview/4d6aaa3f18a441bc620dce67ed9691373fcb1c42",
     coverUrl: "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02d657c7199bd939da7c5daa77",
-    timestamps: [0.0, 4.8, 7.7, 10.5, 14.4],
+    timestamps: [0.0, 4.8, 7.9, 10.4, 14.3],
     lyrics: [
       "君の声が 届かなくても",
       "触れられないとしても",
@@ -212,7 +212,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/4ntJKvthRg9ORzUhGyfAps",
     previewUrl: "https://p.scdn.co/mp3-preview/beae9f55c05897b442935b8976dab817f4d7a87f",
     coverUrl: "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02d657c7199bd939da7c5daa77",
-    timestamps: [0.0, 4.9, 12.2, 16.6, 24.4],
+    timestamps: [0.0, 4.9, 12.2, 16.6, 24.5],
     lyrics: [
       "月明かりのセレナーデ",
       "境界線の舞台で 運命の罠を",
@@ -229,7 +229,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/0UV888klzGdbyMpwuxPYnK",
     previewUrl: "https://p.scdn.co/mp3-preview/ae38bedefb78bb0ac99ba3136c9aee122c44418d",
     coverUrl: "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e026c52b8f059802dc3bc31d706",
-    timestamps: [0.0, 8.0, 15.0, 21.0],
+    timestamps: [0.0, 7.7, 20.5, 23.5],
     lyrics: [
       "涙の味が教えてる",
       "ほら、雨はいつかこの地球を巡り巡って",
@@ -245,7 +245,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/46Qfr2EcTsB0H7I1h2XLoc",
     previewUrl: "https://p.scdn.co/mp3-preview/69293945b9408edb042815c27e42833c1202645b",
     coverUrl: "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02032870f5ce24c70715e952e5",
-    timestamps: [0.0, 4.0, 8.0, 12.5, 16.5],
+    timestamps: [7.3, 10.3, 12.5, 14.2, 17.6],
     lyrics: [
       "貫け いまこの声よ",
       "思い出せ あの頃の記憶を",
@@ -262,7 +262,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/5Hx7H767SqDFuW8aoqPFql",
     previewUrl: "https://p.scdn.co/mp3-preview/24aff4fc1a78a025a37698904b823a4112985472",
     coverUrl: "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02a8ac7bf4a90bf0818031cfec",
-    timestamps: [0.0, 7.2, 10.7, 17.8],
+    timestamps: [0.0, 3.3, 10.7, 17.9],
     lyrics: [
       "あなたのすべてが明日を失くして",
       "永遠の中を彷徨っているよ",
@@ -278,7 +278,7 @@ export const PLAYLIST_TRACKS: TrackLyrics[] = [
     spotifyUrl: "https://open.spotify.com/track/12GTBy9hDysvblcr2XC5wq",
     previewUrl: "https://p.scdn.co/mp3-preview/f166ee76e98e9a02e95408bee8685b7e27ae3c24",
     coverUrl: "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02d3b27ed188ff76904ef0c300",
-    timestamps: [0.0, 8.1, 18.2, 24.0],
+    timestamps: [0.0, 8.1, 18.5, 23.5],
     lyrics: [
       "夜は明ける それを僕は眺めている",
       "変わってくこと 始まってくこと",
