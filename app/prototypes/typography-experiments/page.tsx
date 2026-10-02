@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import styles from './styles.module.css';
 import { PLAYLIST_TRACKS, TrackLyrics, getLineTimestamp } from './lyricsData';
+import { LoopIcon, ShuffleIcon, NextIcon, PrevIcon, PlayIcon, PauseIcon, DiceIcon } from './icons';
 
 const ANIMATION_TYPES = [
   'wave',
@@ -664,7 +665,7 @@ export default function TypographyExperimentsPrototype() {
                   onClick={() => handleModeChange('loop')}
                   title="Loop playlist sequentially"
                 >
-                  <span className={styles.modeIcon}>🔁</span>
+                  <LoopIcon size={14} />
                   <span>Loop</span>
                 </button>
                 <button
@@ -673,7 +674,7 @@ export default function TypographyExperimentsPrototype() {
                   onClick={() => handleModeChange('shuffle')}
                   title="Shuffle playlist randomly"
                 >
-                  <span className={styles.modeIcon}>🔀</span>
+                  <ShuffleIcon size={14} />
                   <span>Shuffle</span>
                 </button>
               </div>
@@ -687,7 +688,7 @@ export default function TypographyExperimentsPrototype() {
                 onClick={shuffleLineAnimations}
                 title="Randomize animations for each line"
               >
-                <span>🎲</span>
+                <DiceIcon size={15} />
                 <span>Shuffle Animations</span>
               </button>
             </div>
@@ -838,35 +839,48 @@ export default function TypographyExperimentsPrototype() {
           <div className={styles.playerButtonsRow}>
             <button
               type="button"
+              className={`${styles.playerNavButton} ${playbackMode === 'shuffle' ? styles.playerButtonActive : ''}`}
+              onClick={() => handleModeChange(playbackMode === 'shuffle' ? 'loop' : 'shuffle')}
+              title={playbackMode === 'shuffle' ? "Shuffle is ON (Click for Loop)" : "Enable Shuffle"}
+              aria-label="Toggle shuffle mode"
+            >
+              <ShuffleIcon size={18} />
+            </button>
+            <button
+              type="button"
               className={styles.playerNavButton}
               onClick={handlePrevTrack}
               title="Previous song"
+              aria-label="Previous song"
             >
-              ⏮
+              <PrevIcon size={17} />
             </button>
             <button
               type="button"
               className={styles.playerRoundButton}
               onClick={togglePlay}
               title={isPlaying ? "Pause" : "Play"}
+              aria-label={isPlaying ? "Pause" : "Play"}
             >
-              {isPlaying ? '❚❚' : '▶'}
+              {isPlaying ? <PauseIcon size={15} /> : <PlayIcon size={16} className={styles.playIconOffset} />}
             </button>
             <button
               type="button"
               className={styles.playerNavButton}
               onClick={handleNextTrack}
               title={playbackMode === 'shuffle' ? "Next random song (Shuffle)" : "Next song (Loop)"}
+              aria-label="Next song"
             >
-              ⏭
+              <NextIcon size={17} />
             </button>
             <button
               type="button"
-              className={styles.playerModeButton}
+              className={`${styles.playerNavButton} ${playbackMode === 'loop' ? styles.playerButtonActive : ''}`}
               onClick={() => handleModeChange(playbackMode === 'loop' ? 'shuffle' : 'loop')}
-              title={playbackMode === 'loop' ? "Loop Mode: Playing in order (Click for Shuffle)" : "Shuffle Mode: Playing randomly (Click for Loop)"}
+              title={playbackMode === 'loop' ? "Loop is ON (Click for Shuffle)" : "Enable Loop"}
+              aria-label="Toggle loop mode"
             >
-              {playbackMode === 'loop' ? '🔁' : '🔀'}
+              <LoopIcon size={18} />
             </button>
           </div>
 
