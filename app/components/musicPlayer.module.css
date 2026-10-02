@@ -306,7 +306,6 @@
 
 .popoverHidden {
   opacity: 0;
-  visibility: hidden;
   pointer-events: none;
   transform: scale(0.92) translateY(-8px);
 }
@@ -449,7 +448,6 @@
 
   .popoverHidden {
     opacity: 0;
-    visibility: hidden;
     pointer-events: none;
     transform: translateY(16px);
   }

@@ -56,30 +56,48 @@ export default function MusicPlayer() {
         const controller = (window as any).__SPOTIFY_CONTROLLER__;
         if (controller) {
           try {
-            if (id && id !== currentLoadedIdRef.current) {
+            const trackUri = uri || (id ? `spotify:track:${id}` : undefined);
+            if (id) {
               currentLoadedIdRef.current = id;
-              if (typeof controller.loadEntity === 'function') {
-                controller.loadEntity(uri || `spotify:track:${id}`, false, Math.floor(timeSec));
-              } else {
-                controller.loadUri(uri || `spotify:track:${id}`);
-                controller.seek(Math.floor(timeSec));
-              }
-              setTimeout(() => {
-                try {
-                  controller.seek(Math.floor(timeSec));
-                  controller.play();
-                } catch (_) {}
-              }, 250);
-            } else {
-              controller.seek(Math.floor(timeSec));
             }
+            if (trackUri) {
+              if (typeof controller.loadEntity === 'function') {
+                controller.loadEntity(trackUri, false, Math.floor(timeSec));
+              } else if (typeof controller.loadUri === 'function') {
+                controller.loadUri(trackUri);
+              }
+            }
+
+            if (typeof controller.seek === 'function') {
+              try {
+                controller.seek(Math.floor(timeSec));
+              } catch (_) {}
+            }
+
             controller.play();
+
+            setTimeout(() => {
+              try {
+                if (typeof controller.seek === 'function') {
+                  controller.seek(Math.floor(timeSec));
+                }
+                controller.play();
+              } catch (_) {}
+            }, 150);
+
+            setTimeout(() => {
+              try {
+                controller.play();
+              } catch (_) {}
+            }, 400);
           } catch (err) {
             console.warn('Spotify controller seek error:', err);
           }
         } else if (iframe && id) {
-          currentLoadedIdRef.current = id;
-          iframe.src = `https://open.spotify.com/embed/track/${id}?utm_source=generator&autoplay=1`;
+          if (id !== currentLoadedIdRef.current) {
+            currentLoadedIdRef.current = id;
+            iframe.src = `https://open.spotify.com/embed/track/${id}?utm_source=generator&autoplay=1`;
+          }
         }
         setIsPlaying(true);
       } else if (action === 'playTrack' && id) {
@@ -150,6 +168,13 @@ export default function MusicPlayer() {
             (window as any).__SPOTIFY_CONTROLLER__ = EmbedController;
             EmbedController.addListener('playback_update', (e: any) => {
               const { position, duration, isPaused, playingURI } = e.data || {};
+              if (playingURI) {
+                const parts = playingURI.split(':');
+                const trackId = parts[parts.length - 1];
+                if (trackId) {
+                  currentLoadedIdRef.current = trackId;
+                }
+              }
               const syncDetail = {
                 uri: playingURI,
                 isPlaying: !isPaused,
@@ -312,7 +337,7 @@ export default function MusicPlayer() {
             frameBorder="0"
             allowFullScreen
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
+            loading="eager"
           />
         </div>
       </div>

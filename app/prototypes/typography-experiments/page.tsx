@@ -90,6 +90,7 @@ export default function TypographyExperimentsPrototype() {
     isPlaying: false,
     seekTarget: 0,
     seekTimestamp: 0,
+    seekPreviousTime: 0,
   });
 
   // Mouse tracking state for wave physics
@@ -168,6 +169,7 @@ export default function TypographyExperimentsPrototype() {
             isPlaying: true,
             seekTarget: 0,
             seekTimestamp: 0,
+            seekPreviousTime: 0,
           };
           setCurrentTime(0);
         }
@@ -191,30 +193,55 @@ export default function TypographyExperimentsPrototype() {
           return;
         }
 
-        setIsPlaying(playerIsPlaying);
-        playheadRef.current.isPlaying = playerIsPlaying;
-        if (!playerIsPlaying) {
-          playheadRef.current.anchorTime = currentTimeRef.current;
-          playheadRef.current.anchorTimestamp = performance.now();
+        // When user just sought, ignore transient paused packet from Spotify's seek/buffer
+        if (isRecentSeek && !playerIsPlaying) {
+          // Keep local playback active
+        } else {
+          setIsPlaying(playerIsPlaying);
+          playheadRef.current.isPlaying = playerIsPlaying;
+          if (!playerIsPlaying) {
+            playheadRef.current.anchorTime = currentTimeRef.current;
+            playheadRef.current.anchorTimestamp = performance.now();
+          }
         }
       }
 
       if (typeof position === 'number' && position >= 0) {
         const spotifySecs = position / 1000;
         const playhead = playheadRef.current;
-        const isRecentSeek = Date.now() - playhead.seekTimestamp < 2500;
+        const now = performance.now();
+        const currentCalculatedTime =
+          playhead.anchorTime + (playhead.isPlaying ? Math.max(0, (now - playhead.anchorTimestamp) / 1000) : 0);
 
         if (isRecentSeek) {
-          // While buffering a seek, ignore stale old positions until Spotify reaches near the seek target
-          if (Math.abs(spotifySecs - playhead.seekTarget) <= 3.5) {
-            playhead.seekTimestamp = 0;
+          // The user explicitly selected a lyric line or moved the scrubber.
+          // Discard any incoming Spotify packet that corresponds to before the seek:
+          const wasForwardSeek = playhead.seekTarget > playhead.seekPreviousTime;
+          if (wasForwardSeek && spotifySecs < playhead.seekTarget - 0.5) {
+            // Stale packet from before the forward seek - ignore!
+            return;
+          }
+          if (!wasForwardSeek && spotifySecs > playhead.seekTarget + 1.0) {
+            // Stale packet from before the backward seek - ignore!
+            return;
+          }
+
+          // If Spotify has caught up to the seek target or near current calculated time, lock onto Spotify's audio position!
+          const diffFromSeek = Math.abs(spotifySecs - playhead.seekTarget);
+          const diffFromCalculated = Math.abs(spotifySecs - currentCalculatedTime);
+          if (diffFromSeek <= 2.5 || diffFromCalculated <= 2.0) {
             playhead.anchorTime = spotifySecs;
-            playhead.anchorTimestamp = performance.now();
+            playhead.anchorTimestamp = now;
           }
         } else {
-          // Seamlessly update anchor time to match Spotify audio without visual jumping
-          playhead.anchorTime = spotifySecs;
-          playhead.anchorTimestamp = performance.now();
+          // Normal playback without recent seek:
+          // NEVER allow an unexpected large jump backwards!
+          // Only align if Spotify is within 2.0 seconds of current playback position
+          const diff = Math.abs(spotifySecs - currentCalculatedTime);
+          if (diff <= 2.0) {
+            playhead.anchorTime = spotifySecs;
+            playhead.anchorTimestamp = now;
+          }
         }
       }
     };
@@ -268,6 +295,7 @@ export default function TypographyExperimentsPrototype() {
       isPlaying: true,
       seekTarget: 0,
       seekTimestamp: Date.now(),
+      seekPreviousTime: 0,
     };
 
     setCurrentTime(0);
@@ -324,6 +352,7 @@ export default function TypographyExperimentsPrototype() {
     e.stopPropagation();
     const totalDuration = durationRef.current || duration || 29;
     const targetTime = getLineTimestamp(activeTrack, lineIndex, totalDuration);
+    const prevTime = currentTimeRef.current;
 
     playheadRef.current = {
       anchorTime: targetTime,
@@ -331,6 +360,7 @@ export default function TypographyExperimentsPrototype() {
       isPlaying: true,
       seekTarget: targetTime,
       seekTimestamp: Date.now(),
+      seekPreviousTime: prevTime,
     };
 
     setCurrentTime(targetTime);
@@ -850,6 +880,7 @@ export default function TypographyExperimentsPrototype() {
                 const clickX = e.clientX - rect.left;
                 const newRatio = Math.max(0, Math.min(1, clickX / rect.width));
                 const seekTo = Math.round(newRatio * totalDuration * 10) / 10;
+                const prevTime = currentTimeRef.current;
 
                 playheadRef.current = {
                   anchorTime: seekTo,
@@ -857,6 +888,7 @@ export default function TypographyExperimentsPrototype() {
                   isPlaying: true,
                   seekTarget: seekTo,
                   seekTimestamp: Date.now(),
+                  seekPreviousTime: prevTime,
                 };
 
                 setCurrentTime(seekTo);
