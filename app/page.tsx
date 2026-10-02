@@ -22,6 +22,12 @@ export default function Home() {
       path: '/prototypes/typography-experiments',
       tag: '03 / Experiment'
     },
+    {
+      title: 'Doodle creator',
+      description: 'Interactive doodle creator prototype',
+      path: '/prototypes/doodle-creator',
+      tag: '04 / Prototype'
+    },
     // Add your new prototypes here like this:
     // {
     //   title: 'Your new prototype',

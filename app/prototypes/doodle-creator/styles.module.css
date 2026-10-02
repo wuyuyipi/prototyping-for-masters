@@ -1,0 +1,1219 @@
+/* Cutting-Mat & Printmaker Styling - Doodle Creator */
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Floating Bottom Footer */
+.footerContainer {
+  position: fixed;
+  bottom: 1.5vh;
+  left: 8vw;
+  right: 8vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.footerText {
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 2px rgba(12, 79, 86, 0.4);
+  pointer-events: auto;
+}
+
+.footerTag {
+  background-color: #ED6A85;
+  color: #1A2628;
+  border: 1.5px solid #1A2628;
+  padding: 3px 10px;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  pointer-events: auto;
+}
+
+/* Central Framed Paper Sheet */
+.main {
+  width: 88vw;
+  height: 86vh;
+  max-width: 1140px;
+  background-color: #FFFFFF;
+  border: 2px solid #1A2628;
+  padding: 2rem 2.5rem;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 5;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #1A2628 #F0F2F2;
+  display: flex;
+  flex-direction: column;
+}
+
+.contentWrapper {
+  width: 100%;
+  max-width: 1060px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Top Navigation Bar */
+.topNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1.5px solid #1A2628;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  color: #1A2628;
+  text-decoration: none;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.backButton:hover {
+  background-color: #ED6A85;
+  color: #1A2628;
+  transform: translate(-2px, -2px);
+}
+
+.backButton:active {
+  transform: translate(1px, 1px);
+}
+
+.categoryBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #ED6A85;
+  color: #1A2628;
+  border: 1.5px solid #1A2628;
+  padding: 4px 12px;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.squareBullet {
+  width: 6px;
+  height: 6px;
+  background-color: #1A2628;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.heading1 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 3vw, 2.35rem);
+  font-weight: 700;
+  color: #1A2628;
+  margin: 0 0 1rem 0;
+  line-height: 1.15;
+}
+
+.prototypeArea {
+  flex: 1;
+  width: 100%;
+}
+
+/* ========================================= */
+/* MS PAINT RETRO WINDOW & WORKSPACE STYLING */
+/* ========================================= */
+
+.paintWindow {
+  background-color: #D6DADB;
+  border: 2px solid #1A2628;
+  box-shadow: 4px 4px 0px #1A2628;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+/* Titlebar */
+.windowTitleBar {
+  background: linear-gradient(90deg, #104C52 0%, #1A6C75 50%, #298E99 100%);
+  color: #FFFFFF;
+  padding: 6px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1.5px solid #1A2628;
+  user-select: none;
+}
+
+.windowTitle {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.windowTitleIcon {
+  font-size: 1rem;
+}
+
+.windowControls {
+  display: flex;
+  gap: 4px;
+}
+
+.windowControlButton {
+  width: 20px;
+  height: 20px;
+  background-color: #E2E5E6;
+  border: 1px solid #1A2628;
+  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #828B8C;
+  font-family: monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1A2628;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.windowControlButton:hover {
+  background-color: #FFFFFF;
+}
+
+.windowControlButton:active {
+  box-shadow: inset 1px 1px 0px #828B8C;
+  background-color: #CBD0D1;
+}
+
+/* Menu Bar */
+.windowMenuBar {
+  background-color: #E8ECEC;
+  border-bottom: 1.5px solid #1A2628;
+  display: flex;
+  align-items: center;
+  padding: 2px 6px;
+  gap: 4px;
+}
+
+.menuItemButton {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 3px 9px;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1A2628;
+  cursor: pointer;
+  border-radius: 1px;
+}
+
+.menuItemButton:hover {
+  background-color: #FFFFFF;
+  border-color: #1A2628;
+}
+
+.menuItemButtonActive {
+  background-color: #FFFFFF;
+  border-color: #1A2628;
+  box-shadow: inset 1px 1px 0px #828B8C;
+}
+
+/* ========================================= */
+/* TEXTURE MEDIUM BAR (PRIMARY USER ACTION)  */
+/* ========================================= */
+
+.textureSection {
+  background-color: #F4F6F6;
+  border-bottom: 1.5px solid #1A2628;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.textureHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.textureTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.textureHeading {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #1A2628;
+}
+
+
+
+/* Texture Buttons Grid */
+.textureButtonsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.textureButton {
+  background-color: #FFFFFF;
+  border: 2px solid #1A2628;
+  box-shadow: 2px 2px 0px #1A2628;
+  padding: 7px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.1s ease, background-color 0.1s ease, box-shadow 0.1s ease;
+}
+
+.textureButton:hover {
+  background-color: #FFF5F7;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #1A2628;
+}
+
+.textureButton:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px #1A2628;
+}
+
+.textureButtonActive {
+  background-color: #ED6A85;
+  border: 2px solid #1A2628;
+  box-shadow: inset 2px 2px 0px #B8475F, 1px 1px 0px #1A2628;
+  transform: translate(1px, 1px);
+}
+
+.textureButtonActive:hover {
+  background-color: #ED6A85;
+  box-shadow: inset 2px 2px 0px #B8475F, 1px 1px 0px #1A2628;
+  transform: translate(1px, 1px);
+}
+
+.textureButtonIcon {
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.textureButtonName {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #1A2628;
+  line-height: 1;
+}
+
+/* Secondary controls (intensity, grain, sample presets) */
+.textureSubControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 6px;
+  border-top: 1px dashed #B8C2C4;
+}
+
+.slidersGroup {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.controlField {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controlFieldLabel {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #1A2628;
+}
+
+.sliderInput {
+  width: 90px;
+  height: 6px;
+  accent-color: #104C52;
+  cursor: pointer;
+}
+
+.sliderValueTag {
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1A2628;
+  min-width: 38px;
+}
+
+.grainSelect {
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  padding: 2px 6px;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #1A2628;
+  cursor: pointer;
+}
+
+
+
+/* Presets Bar */
+.presetsBar {
+  background-color: #E8ECEC;
+  border-bottom: 1.5px solid #1A2628;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.presetGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.presetBarLabel {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #4A5F62;
+  margin-right: 4px;
+}
+
+.presetPillButton {
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  box-shadow: 1.5px 1.5px 0px #1A2628;
+  padding: 3px 9px;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1A2628;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.1s ease, background-color 0.1s ease;
+}
+
+.presetPillButton:hover {
+  background-color: #F5EAEB;
+  transform: translate(-1px, -1px);
+}
+
+.presetPillButton:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+.presetPillPrimary {
+  background-color: #104C52;
+  color: #FFFFFF;
+}
+
+.presetPillPrimary:hover {
+  background-color: #166168;
+  color: #FFFFFF;
+}
+
+.presetPillDanger {
+  background-color: #FFFFFF;
+  color: #A32035;
+  border-color: #A32035;
+}
+
+.presetPillDanger:hover {
+  background-color: #FBEBED;
+}
+
+.promptForm {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 4px;
+}
+
+.promptInput {
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  padding: 3px 8px;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  color: #1A2628;
+  width: 170px;
+  outline: none;
+  box-shadow: inset 1px 1px 0px rgba(0, 0, 0, 0.1);
+  transition: width 0.2s ease, border-color 0.15s ease;
+}
+
+.promptInput:focus {
+  border-color: #0C4F56;
+  width: 210px;
+}
+
+.promptDrawButton {
+  background-color: #ED6A85;
+  color: #1A2628;
+  border: 1.5px solid #1A2628;
+  box-shadow: 1.5px 1.5px 0px #1A2628;
+  padding: 3px 10px;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.1s ease, background-color 0.1s ease;
+}
+
+.promptDrawButton:hover {
+  background-color: #F27B94;
+  transform: translate(-1px, -1px);
+}
+
+.promptDrawButton:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+.promptDrawButtonLoading {
+  background-color: #E2ECEE;
+  color: #0C4F56;
+  cursor: wait;
+}
+
+.uploadRefButton {
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  box-shadow: 1.5px 1.5px 0px #1A2628;
+  padding: 3px 7px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, background-color 0.1s ease;
+}
+
+.uploadRefButton:hover {
+  background-color: #F5EAEB;
+  transform: translate(-1px, -1px);
+}
+
+.uploadRefButton:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+/* ========================================= */
+/* MAIN WORKSPACE: TOOLBAR + CANVAS          */
+/* ========================================= */
+
+.workspaceArea {
+  display: flex;
+  flex-direction: row;
+  background-color: #CBD0D1;
+  border-bottom: 1.5px solid #1A2628;
+  min-height: 480px;
+}
+
+/* Left Tools Sidebar */
+.toolsSidebar {
+  width: 82px;
+  background-color: #DCE0E1;
+  border-right: 1.5px solid #1A2628;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.toolsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 32px);
+  gap: 4px;
+  justify-content: center;
+}
+
+.toolButton {
+  width: 32px;
+  height: 32px;
+  background-color: #E6EAEB;
+  border: 1.5px solid #1A2628;
+  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #97A0A1;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 1px;
+}
+
+.toolButton:hover {
+  background-color: #FFFFFF;
+}
+
+.toolButtonActive {
+  background-color: #CBD2D4;
+  box-shadow: inset 2px 2px 0px #1A2628;
+  border: 1.5px solid #1A2628;
+}
+
+/* Size Selection Box */
+.sidebarSectionBox {
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  box-shadow: inset 1px 1px 0px #828B8C;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sidebarBoxTitle {
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #4A5F62;
+  text-align: center;
+  margin-bottom: 2px;
+}
+
+.sizeOptionRow {
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.sizeOptionRow:hover {
+  background-color: #F0F4F5;
+}
+
+.sizeOptionRowActive {
+  background-color: #0C4F56;
+  border-color: #0C4F56;
+}
+
+.sizeBar2px {
+  width: 24px;
+  height: 2px;
+  background-color: #1A2628;
+}
+
+.sizeBar5px {
+  width: 24px;
+  height: 4px;
+  background-color: #1A2628;
+}
+
+.sizeBar10px {
+  width: 24px;
+  height: 7px;
+  background-color: #1A2628;
+}
+
+.sizeBar20px {
+  width: 24px;
+  height: 12px;
+  background-color: #1A2628;
+}
+
+.sizeOptionRowActive .sizeBar2px,
+.sizeOptionRowActive .sizeBar5px,
+.sizeOptionRowActive .sizeBar10px,
+.sizeOptionRowActive .sizeBar20px {
+  background-color: #FFFFFF;
+}
+
+/* Shape Fill Mode */
+.fillModeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+.fillModeButton {
+  height: 22px;
+  background-color: #E8ECEC;
+  border: 1px solid #1A2628;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.fillModeButtonActive {
+  background-color: #0C4F56;
+  color: #FFFFFF;
+}
+
+.fillIconOutline {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid currentColor;
+}
+
+.fillIconSolid {
+  width: 12px;
+  height: 12px;
+  background-color: currentColor;
+}
+
+.fillIconBoth {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid #1A2628;
+  background-color: #ED6A85;
+}
+
+/* History buttons */
+.historyButtonGroup {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+}
+
+.actionButtonMini {
+  padding: 4px 0;
+  background-color: #E8ECEC;
+  border: 1.5px solid #1A2628;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #1A2628;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.actionButtonMini:hover {
+  background-color: #FFFFFF;
+}
+
+.actionButtonMini:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background-color: #E8ECEC;
+}
+
+/* Canvas Display Area */
+.canvasContainer {
+  flex: 1;
+  background-color: #A9B2B4;
+  padding: 12px;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.canvasBevelWrapper {
+  background-color: #FFFFFF;
+  border: 2px solid;
+  border-color: #555E60 #FFFFFF #FFFFFF #555E60;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.15);
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+
+.paintCanvasElement {
+  display: block;
+  background-color: #FFFFFF;
+  cursor: crosshair;
+  touch-action: none;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Canvas Corner Resize Gripper decoration */
+.canvasCornerHandle {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 6px;
+  height: 6px;
+  background-color: #1A2628;
+  border: 1px solid #FFFFFF;
+  pointer-events: none;
+}
+
+/* Animated Drawing Overlay on Canvas */
+.drawingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(1.5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 15;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.drawingDialog {
+  background-color: #D6DADB;
+  border: 2px solid #1A2628;
+  box-shadow: 4px 4px 0px #1A2628;
+  width: 280px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawingDialogTitle {
+  background: linear-gradient(90deg, #104C52 0%, #298E99 100%);
+  color: #FFFFFF;
+  padding: 5px 8px;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1.5px solid #1A2628;
+  line-height: 1.2;
+}
+
+.drawingPencilAnim {
+  display: inline-block;
+  font-size: 0.95rem;
+  animation: pencilWobble 0.4s infinite alternate ease-in-out;
+}
+
+.drawingDialogBody {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background-color: #ECEFEF;
+  line-height: 1.2;
+}
+
+.drawingStatusText {
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #1A2628;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.drawingProgressBar {
+  width: 100%;
+  height: 14px;
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  box-shadow: inset 1px 1px 0px #828B8C;
+  overflow: hidden;
+  padding: 1px;
+}
+
+.drawingProgressFill {
+  height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    #0C4F56,
+    #0C4F56 8px,
+    #1A6C75 8px,
+    #1A6C75 16px
+  );
+  transition: width 0.08s linear;
+}
+
+.drawingPromptTag {
+  font-family: monospace;
+  font-size: 0.68rem;
+  color: #4A5F62;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+@keyframes pencilWobble {
+  0% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+  100% {
+    transform: rotate(-25deg) translate(-2px, -3px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ========================================= */
+/* BOTTOM PALETTE & COLOR BOX                */
+/* ========================================= */
+
+.bottomBarArea {
+  background-color: #DCE0E1;
+  border-bottom: 1.5px solid #1A2628;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Active Dual Color Box */
+.activeColorsBox {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  box-shadow: inset 1px 1px 0px #828B8C;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.colorSlotSecondary {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid #1A2628;
+  box-shadow: 1px 1px 0px #FFFFFF;
+  cursor: pointer;
+}
+
+.colorSlotPrimary {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid #1A2628;
+  box-shadow: 1px 1px 0px #FFFFFF;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.colorSlotActiveIndicator {
+  outline: 2px solid #ED6A85;
+}
+
+/* Swatches Grid (2 rows x 14 columns) */
+.swatchesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.swatchesRow {
+  display: flex;
+  gap: 3px;
+}
+
+.swatchButton {
+  width: 19px;
+  height: 19px;
+  border: 1px solid #1A2628;
+  cursor: pointer;
+  box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.4), inset -1px -1px 0px rgba(0, 0, 0, 0.3);
+  padding: 0;
+  border-radius: 0;
+}
+
+.swatchButton:hover {
+  transform: scale(1.15);
+  z-index: 3;
+}
+
+.customColorWrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.colorPickerInput {
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid #1A2628;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.colorPickerLabel {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #1A2628;
+}
+
+/* ========================================= */
+/* STATUS BAR                                */
+/* ========================================= */
+
+.statusBar {
+  background-color: #E2E5E6;
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: #1A2628;
+  user-select: none;
+}
+
+.statusItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 1px 8px;
+  border-right: 1px solid #B8C2C4;
+}
+
+.statusItem:last-child {
+  border-right: none;
+}
+
+.statusCoord {
+  min-width: 90px;
+  font-family: monospace;
+}
+
+.statusMedium {
+  font-weight: 700;
+  color: #0C4F56;
+}
+
+.statusHint {
+  color: #555E60;
+}
+
+/* ========================================= */
+/* ABOUT / HELP MODAL                        */
+/* ========================================= */
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(12, 79, 86, 0.65);
+  backdrop-filter: blur(2px);
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.modalWindow {
+  background-color: #D6DADB;
+  border: 2px solid #1A2628;
+  box-shadow: 6px 6px 0px #1A2628;
+  max-width: 540px;
+  width: 100%;
+}
+
+.modalHeader {
+  background: linear-gradient(90deg, #104C52 0%, #1A6C75 100%);
+  color: #FFFFFF;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1.5px solid #1A2628;
+}
+
+.modalTitle {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.modalCloseButton {
+  width: 20px;
+  height: 20px;
+  background-color: #E2E5E6;
+  border: 1px solid #1A2628;
+  font-family: monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1A2628;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.modalBody {
+  padding: 1.25rem;
+  background-color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modalParagraph {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: #1A2628;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.mediumDescriptionList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.mediumDescriptionItem {
+  background-color: #F4F6F6;
+  border-left: 3px solid #0C4F56;
+  padding: 6px 10px;
+}
+
+.mediumDescriptionItemTitle {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #0C4F56;
+  margin-bottom: 2px;
+}
+
+.mediumDescriptionItemBody {
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  color: #4A5F62;
+  margin: 0;
+}
+
+.modalFooter {
+  background-color: #E8ECEC;
+  border-top: 1.5px solid #1A2628;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modalConfirmButton {
+  background-color: #104C52;
+  color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  box-shadow: 2px 2px 0px #1A2628;
+  padding: 4px 14px;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.modalConfirmButton:hover {
+  background-color: #166168;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .main {
+    width: 95vw;
+    height: 92vh;
+    padding: 1.25rem 1rem;
+  }
+  
+  .textureButtonsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .toolsSidebar {
+    width: 70px;
+  }
+
+  .toolsGrid {
+    grid-template-columns: repeat(2, 28px);
+  }
+
+  .toolButton {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 600px) {
+  .textureButtonsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .windowMenuBar {
+    display: none;
+  }
+}
