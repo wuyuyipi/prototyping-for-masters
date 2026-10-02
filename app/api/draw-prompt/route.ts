@@ -1,5 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 
+async function fetchImageBuffer(url: string, timeoutMs = 8000): Promise<{ buffer: Buffer; mimeType: string } | null> {
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        Accept: "image/*,*/*;q=0.8",
+      },
+    });
+    clearTimeout(timer);
+    if (!res.ok) return null;
+    const contentType = res.headers.get("content-type") || "image/jpeg";
+    const arrayBuf = await res.arrayBuffer();
+    if (arrayBuf.byteLength < 500) return null; // Skip tiny dummy/corrupt files
+    return { buffer: Buffer.from(arrayBuf), mimeType: contentType };
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -10,62 +33,110 @@ export async function POST(req: NextRequest) {
     }
 
     const cleanPrompt = prompt.trim();
-    let imageUrl: string | null = null;
+    let imgData: { buffer: Buffer; mimeType: string } | null = null;
 
-    // 1. First attempt: Search Wikipedia for a real reference image
+    // 1. Primary Attempt: Search DuckDuckGo for high-contrast isolated images of the subject
     try {
-      const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=${encodeURIComponent(
-        cleanPrompt
-      )}&gsrlimit=3&prop=pageimages&piprop=thumbnail&pithumbsize=600`;
+      const queries = [
+        `${cleanPrompt} clipart isolated white background`,
+        `${cleanPrompt} vector isolated`,
+        cleanPrompt,
+      ];
 
-      const wikiRes = await fetch(wikiUrl, {
-        headers: { "User-Agent": "DoodleCreator/1.0 (Educational Workshop)" },
-      });
+      for (const q of queries) {
+        if (imgData) break;
+        const tokenRes = await fetch(
+          `https://duckduckgo.com/?q=${encodeURIComponent(q)}&t=h_&iax=images&ia=images`,
+          {
+            headers: {
+              "User-Agent":
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            },
+          }
+        );
+        if (!tokenRes.ok) continue;
+        const tokenHtml = await tokenRes.text();
+        const vqdMatch = tokenHtml.match(/vqd=([^&"'\s]+)/) || tokenHtml.match(/vqd="([^"]+)"/);
+        if (!vqdMatch) continue;
 
-      if (wikiRes.ok) {
-        const wikiData = await wikiRes.json();
-        const pages = wikiData.query?.pages ? Object.values(wikiData.query.pages) : [];
-        const match = pages.find((p: any) => p.thumbnail?.source) as any;
-        if (match?.thumbnail?.source) {
-          imageUrl = match.thumbnail.source;
+        const vqd = vqdMatch[1];
+        const searchUrl = `https://duckduckgo.com/i.js?l=us-en&o=json&q=${encodeURIComponent(
+          q
+        )}&vqd=${vqd}&f=,,,&p=1`;
+        const searchRes = await fetch(searchUrl, {
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          },
+        });
+        if (!searchRes.ok) continue;
+        const resultsData = await searchRes.json();
+        const results = resultsData?.results || [];
+
+        // Try top 4 candidates in case some host blocks direct downloads
+        for (let i = 0; i < Math.min(4, results.length); i++) {
+          const candidateUrl = results[i]?.image;
+          if (!candidateUrl) continue;
+          const fetched = await fetchImageBuffer(candidateUrl, 6000);
+          if (fetched) {
+            imgData = fetched;
+            break;
+          }
         }
       }
     } catch (e) {
-      console.warn("Wikipedia image lookup fallback:", e);
+      console.warn("DuckDuckGo image search error:", e);
     }
 
-    // 2. Second attempt: If Wikipedia didn't have an image, fetch clean reference image
-    if (!imageUrl) {
-      const seed = Math.floor(Math.random() * 1000000);
-      imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
-        "simple clean clear isolated illustration of " + cleanPrompt + " on plain white background, centered, high contrast"
-      )}?width=600&height=400&nologo=true&seed=${seed}`;
+    // 2. Secondary Attempt: Wikimedia Commons / Wikipedia API
+    if (!imgData) {
+      try {
+        const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=${encodeURIComponent(
+          cleanPrompt
+        )}&gsrlimit=3&prop=pageimages&piprop=thumbnail&pithumbsize=600`;
+
+        const wikiRes = await fetch(wikiUrl, {
+          headers: { "User-Agent": "DoodleCreator/1.0 (Educational Workshop)" },
+        });
+
+        if (wikiRes.ok) {
+          const wikiData = await wikiRes.json();
+          const pages = wikiData.query?.pages ? Object.values(wikiData.query.pages) : [];
+          const match = pages.find((p: any) => p.thumbnail?.source) as any;
+          if (match?.thumbnail?.source) {
+            imgData = await fetchImageBuffer(match.thumbnail.source, 6000);
+          }
+        }
+      } catch (e) {
+        console.warn("Wikipedia fallback error:", e);
+      }
     }
 
-    // 12-second timeout controller
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 12000);
+    // 3. Third Attempt: Clean isolated reference illustration on white background
+    if (!imgData) {
+      try {
+        const seed = Math.floor(Math.random() * 1000000);
+        const pollUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
+          "simple clean clear isolated illustration of " +
+            cleanPrompt +
+            " on plain white background, centered, high contrast, vibrant colors"
+        )}?width=600&height=400&nologo=true&seed=${seed}`;
 
-    const res = await fetch(imageUrl, {
-      signal: controller.signal,
-      headers: {
-        Accept: "image/*",
-      },
-    });
+        imgData = await fetchImageBuffer(pollUrl, 10000);
+      } catch (e) {
+        console.warn("Clean illustration fallback error:", e);
+      }
+    }
 
-    clearTimeout(timeoutId);
-
-    if (!res.ok) {
+    if (!imgData) {
       return NextResponse.json(
-        { success: false, error: `Image fetch responded with status ${res.status}` },
+        { success: false, error: "Could not retrieve reference image for prompt" },
         { status: 502 }
       );
     }
 
-    const buffer = await res.arrayBuffer();
-    const base64 = Buffer.from(buffer).toString("base64");
-    const mimeType = res.headers.get("content-type") || "image/jpeg";
-    const dataUrl = `data:${mimeType};base64,${base64}`;
+    const base64 = imgData.buffer.toString("base64");
+    const dataUrl = `data:${imgData.mimeType};base64,${base64}`;
 
     return NextResponse.json({
       success: true,

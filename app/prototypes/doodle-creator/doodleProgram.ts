@@ -1512,16 +1512,29 @@ export function compilePromptToDoodle(
 }
 
 // =========================================================================
+// =========================================================================
 // 3. REFERENCE IMAGE VECTOR TRACER & PRESET OVER-IMAGE PAINTER
 // =========================================================================
 
+export interface VectorRegion {
+  color: string;
+  polygon: [number, number][];
+  area: number;
+}
+
+export interface VectorStroke {
+  points: [number, number][];
+  strokeWidth: number;
+  color: string;
+}
+
 export interface TracedReferenceData {
-  paths: [number, number][][];
-  colorCanvas: HTMLCanvasElement;
-  offsetX: number;
-  offsetY: number;
-  targetW: number;
-  targetH: number;
+  regions: VectorRegion[];
+  strokes: VectorStroke[];
+  draftLines: [number, number][][];
+  guideEllipses: { cx: number; cy: number; rx: number; ry: number }[];
+  sparkles: [number, number][];
+  paths?: [number, number][][];
 }
 
 // Distance from point to line segment
@@ -1534,7 +1547,7 @@ function distanceToSegment(p: [number, number], p1: [number, number], p2: [numbe
 }
 
 // Ramer-Douglas-Peucker algorithm to simplify pixel noise into smooth hand-drawn doodle strokes
-function ramerDouglasPeucker(points: [number, number][], epsilon: number): [number, number][] {
+export function ramerDouglasPeucker(points: [number, number][], epsilon: number): [number, number][] {
   if (points.length < 3) return points;
   let dmax = 0;
   let index = 0;
@@ -1554,159 +1567,397 @@ function ramerDouglasPeucker(points: [number, number][], epsilon: number): [numb
   return [points[0], points[end]];
 }
 
-// Color quantizer: maps any RGB pixel into authentic 16-color MS Paint palette
-const MS_PAINT_RGB_PALETTE: [number, number, number][] = [
-  [26, 38, 40],    // Black ink
-  [237, 28, 36],   // Red
-  [255, 127, 39],  // Orange
-  [255, 242, 0],   // Yellow
-  [34, 177, 76],   // Green
-  [0, 162, 232],   // Blue
-  [63, 72, 204],   // Deep blue
-  [163, 73, 164],  // Purple
-  [255, 174, 201], // Pink
-  [185, 122, 87],  // Brown
-  [128, 128, 128], // Gray
-  [255, 255, 255], // White
+// Polygon area via shoelace formula
+function polygonArea(points: [number, number][]): number {
+  let area = 0;
+  for (let i = 0; i < points.length; i++) {
+    const j = (i + 1) % points.length;
+    area += points[i][0] * points[j][1];
+    area -= points[j][0] * points[i][1];
+  }
+  return Math.abs(area) / 2;
+}
+
+// Classic 16-color MS Paint Palette for quantization
+const MS_PAINT_PALETTE_ENTRIES: { name: string; hex: string; rgb: [number, number, number] }[] = [
+  { name: "black", hex: "#1A2628", rgb: [26, 38, 40] },
+  { name: "white", hex: "#FFFFFF", rgb: [255, 255, 255] },
+  { name: "gray", hex: "#808080", rgb: [128, 128, 128] },
+  { name: "silver", hex: "#C0C0C0", rgb: [192, 192, 192] },
+  { name: "darkRed", hex: "#880015", rgb: [136, 0, 21] },
+  { name: "red", hex: "#ED1C24", rgb: [237, 28, 36] },
+  { name: "orange", hex: "#FF7F27", rgb: [255, 127, 39] },
+  { name: "yellow", hex: "#FFF200", rgb: [255, 242, 0] },
+  { name: "gold", hex: "#FFC90E", rgb: [255, 201, 14] },
+  { name: "green", hex: "#22B14C", rgb: [34, 177, 76] },
+  { name: "darkGreen", hex: "#0E6B23", rgb: [14, 107, 35] },
+  { name: "lime", hex: "#B5E61D", rgb: [181, 230, 29] },
+  { name: "blue", hex: "#00A2E8", rgb: [0, 162, 232] },
+  { name: "deepBlue", hex: "#3F48CC", rgb: [63, 72, 204] },
+  { name: "lightBlue", hex: "#99D9EA", rgb: [153, 217, 234] },
+  { name: "purple", hex: "#A349A4", rgb: [163, 73, 164] },
+  { name: "pink", hex: "#FFAEC9", rgb: [255, 174, 201] },
+  { name: "brown", hex: "#B97A57", rgb: [185, 122, 87] },
+  { name: "darkBrown", hex: "#583015", rgb: [88, 48, 21] },
+  { name: "cream", hex: "#FFF9BD", rgb: [255, 249, 189] },
+  { name: "tan", hex: "#E5AA70", rgb: [229, 170, 112] },
 ];
 
-function findNearestPaintColor(r: number, g: number, b: number): [number, number, number] {
-  // If nearly white background, return clean paper white
-  if (r > 235 && g > 235 && b > 235) return [255, 255, 255];
+function findNearestPaintColorIndex(r: number, g: number, b: number): number {
   let bestDist = Infinity;
-  let best = MS_PAINT_RGB_PALETTE[0];
-  for (const c of MS_PAINT_RGB_PALETTE) {
+  let bestIdx = 0;
+  for (let i = 0; i < MS_PAINT_PALETTE_ENTRIES.length; i++) {
+    const c = MS_PAINT_PALETTE_ENTRIES[i].rgb;
     const dr = r - c[0];
     const dg = g - c[1];
     const db = b - c[2];
-    const dist = dr * dr + dg * dg + db * db;
+    const dist = dr * dr * 0.3 + dg * dg * 0.59 + db * db * 0.11;
     if (dist < bestDist) {
       bestDist = dist;
-      best = c;
+      bestIdx = i;
     }
   }
-  return best;
+  return bestIdx;
 }
 
 /**
  * Traces contours and color regions from a reference image
+ * into genuine MS Paint hand-drawn vector shapes and strokes
  */
 export function extractReferenceVectors(img: HTMLImageElement): TracedReferenceData {
-  const maxW = 720;
-  const maxH = 450;
-  const scale = Math.min(maxW / img.width, maxH / img.height, 1.2);
-  const targetW = Math.max(20, Math.round(img.width * scale));
-  const targetH = Math.max(20, Math.round(img.height * scale));
-  const offsetX = Math.round((800 - targetW) / 2);
-  const offsetY = Math.round((500 - targetH) / 2);
-
-  // Analysis grid
-  const gridW = 120;
-  const gridH = Math.max(20, Math.round((targetH / targetW) * gridW));
+  // Use a crisp analysis resolution
+  const gridW = 240;
+  const aspect = (img.height || 1) / (img.width || 1);
+  const gridH = Math.max(30, Math.min(300, Math.round(gridW * aspect)));
 
   const off = document.createElement("canvas");
   off.width = gridW;
   off.height = gridH;
   const offCtx = off.getContext("2d", { willReadFrequently: true });
-
-  const colorCanvas = document.createElement("canvas");
-  colorCanvas.width = targetW;
-  colorCanvas.height = targetH;
-  const colCtx = colorCanvas.getContext("2d", { willReadFrequently: true });
-
-  if (!offCtx || !colCtx) {
-    return { paths: [], colorCanvas, offsetX, offsetY, targetW, targetH };
+  if (!offCtx) {
+    return { regions: [], strokes: [], draftLines: [], guideEllipses: [], sparkles: [], paths: [] };
   }
 
-  // Draw scaled image to grid
   offCtx.drawImage(img, 0, 0, gridW, gridH);
   const imgData = offCtx.getImageData(0, 0, gridW, gridH);
   const src = imgData.data;
 
-  // Quantized color buffer & edge map
-  const colorMap = new Int32Array(gridW * gridH);
-  const isEdge = new Uint8Array(gridW * gridH);
+  // 1. Identify Background & Foreground
+  let borderR = 0, borderG = 0, borderB = 0, borderCount = 0;
+  let whiteBorderCount = 0;
 
-  for (let i = 0; i < gridW * gridH; i++) {
-    const idx = i * 4;
+  for (let x = 0; x < gridW; x++) {
+    const idxTop = (0 * gridW + x) * 4;
+    const idxBot = ((gridH - 1) * gridW + x) * 4;
+    for (const idx of [idxTop, idxBot]) {
+      const r = src[idx], g = src[idx + 1], b = src[idx + 2], a = src[idx + 3];
+      borderCount++;
+      borderR += r; borderG += g; borderB += b;
+      if (a < 50 || (r > 220 && g > 220 && b > 220)) whiteBorderCount++;
+    }
+  }
+  for (let y = 1; y < gridH - 1; y++) {
+    const idxL = (y * gridW + 0) * 4;
+    const idxR = (y * gridW + (gridW - 1)) * 4;
+    for (const idx of [idxL, idxR]) {
+      const r = src[idx], g = src[idx + 1], b = src[idx + 2], a = src[idx + 3];
+      borderCount++;
+      borderR += r; borderG += g; borderB += b;
+      if (a < 50 || (r > 220 && g > 220 && b > 220)) whiteBorderCount++;
+    }
+  }
+
+  borderR = Math.round(borderR / Math.max(1, borderCount));
+  borderG = Math.round(borderG / Math.max(1, borderCount));
+  borderB = Math.round(borderB / Math.max(1, borderCount));
+  const isWhiteBg = whiteBorderCount / borderCount > 0.45;
+
+  // Flood fill background from borders
+  const isBg = new Uint8Array(gridW * gridH);
+  const queue: number[] = [];
+
+  function isBackgroundPixel(idx: number): boolean {
+    const a = src[idx + 3];
+    if (a < 40) return true;
     const r = src[idx];
     const g = src[idx + 1];
     const b = src[idx + 2];
-    const nearest = findNearestPaintColor(r, g, b);
-    src[idx] = nearest[0];
-    src[idx + 1] = nearest[1];
-    src[idx + 2] = nearest[2];
-    src[idx + 3] = (nearest[0] === 255 && nearest[1] === 255 && nearest[2] === 255) ? 0 : 255;
-    colorMap[i] = nearest[0] + (nearest[1] << 8) + (nearest[2] << 16);
+    if (isWhiteBg) {
+      return r > 225 && g > 225 && b > 225;
+    }
+    const diff = Math.abs(r - borderR) + Math.abs(g - borderG) + Math.abs(b - borderB);
+    return diff < 45 || (r > 235 && g > 235 && b > 235);
   }
 
-  // Detect edge pixels between colors / background
+  // Seed boundary pixels
+  for (let x = 0; x < gridW; x++) {
+    const topIdx = 0 * gridW + x;
+    const botIdx = (gridH - 1) * gridW + x;
+    if (isBackgroundPixel(topIdx * 4) && !isBg[topIdx]) { isBg[topIdx] = 1; queue.push(topIdx); }
+    if (isBackgroundPixel(botIdx * 4) && !isBg[botIdx]) { isBg[botIdx] = 1; queue.push(botIdx); }
+  }
   for (let y = 1; y < gridH - 1; y++) {
-    for (let x = 1; x < gridW - 1; x++) {
-      const c = colorMap[y * gridW + x];
-      const right = colorMap[y * gridW + (x + 1)];
-      const down = colorMap[(y + 1) * gridW + x];
-      if (c !== right || c !== down) {
-        isEdge[y * gridW + x] = 1;
+    const leftIdx = y * gridW + 0;
+    const rightIdx = y * gridW + (gridW - 1);
+    if (isBackgroundPixel(leftIdx * 4) && !isBg[leftIdx]) { isBg[leftIdx] = 1; queue.push(leftIdx); }
+    if (isBackgroundPixel(rightIdx * 4) && !isBg[rightIdx]) { isBg[rightIdx] = 1; queue.push(rightIdx); }
+  }
+
+  // BFS flood fill
+  let head = 0;
+  while (head < queue.length) {
+    const curr = queue[head++];
+    const cx = curr % gridW;
+    const cy = Math.floor(curr / gridW);
+
+    const neighbors = [
+      [cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]
+    ];
+    for (const [nx, ny] of neighbors) {
+      if (nx >= 0 && nx < gridW && ny >= 0 && ny < gridH) {
+        const nIdx = ny * gridW + nx;
+        if (!isBg[nIdx] && isBackgroundPixel(nIdx * 4)) {
+          isBg[nIdx] = 1;
+          queue.push(nIdx);
+        }
       }
     }
   }
 
-  // Trace continuous polylines along edges
-  const visited = new Uint8Array(gridW * gridH);
-  const paths: [number, number][][] = [];
+  // 2. Compute Bounding Box of Foreground Subject
+  let minX = gridW, maxX = 0, minY = gridH, maxY = 0;
+  let fgPixels = 0;
+  for (let y = 0; y < gridH; y++) {
+    for (let x = 0; x < gridW; x++) {
+      if (!isBg[y * gridW + x]) {
+        fgPixels++;
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
 
-  for (let y = 1; y < gridH - 1; y++) {
-    for (let x = 1; x < gridW - 1; x++) {
+  // Fallback if image had no clear subject
+  if (fgPixels < 50 || minX >= maxX || minY >= maxY) {
+    minX = 15; maxX = gridW - 15;
+    minY = 15; maxY = gridH - 15;
+  }
+
+  const fgW = Math.max(10, maxX - minX + 1);
+  const fgH = Math.max(10, maxY - minY + 1);
+
+  // Fit within 660x410 box inside 800x500 canvas
+  const maxDrawW = 660;
+  const maxDrawH = 410;
+  const scale = Math.min(maxDrawW / fgW, maxDrawH / fgH);
+  const drawW = fgW * scale;
+  const drawH = fgH * scale;
+  const offsetX = Math.round((800 - drawW) / 2);
+  const offsetY = Math.round((500 - drawH) / 2);
+
+  const toCanvasX = (gx: number) => offsetX + ((gx - minX) / fgW) * drawW;
+  const toCanvasY = (gy: number) => offsetY + ((gy - minY) / fgH) * drawH;
+
+  // 3. Map Foreground Pixels to MS Paint Palette
+  const colorGrid = new Int16Array(gridW * gridH).fill(-1);
+  for (let y = minY; y <= maxY; y++) {
+    for (let x = minX; x <= maxX; x++) {
       const idx = y * gridW + x;
-      if (isEdge[idx] && !visited[idx]) {
-        const poly: [number, number][] = [];
-        let cx = x;
-        let cy = y;
+      if (isBg[idx]) continue;
+      const pIdx = idx * 4;
+      const r = src[pIdx];
+      const g = src[pIdx + 1];
+      const b = src[pIdx + 2];
+      colorGrid[idx] = findNearestPaintColorIndex(r, g, b);
+    }
+  }
 
-        while (cx >= 0 && cx < gridW && cy >= 0 && cy < gridH && isEdge[cy * gridW + cx] && !visited[cy * gridW + cx]) {
-          visited[cy * gridW + cx] = 1;
-          const canvasX = offsetX + (cx / gridW) * targetW;
-          const canvasY = offsetY + (cy / gridH) * targetH;
-          poly.push([canvasX, canvasY]);
+  // 4. Region Segmentation & Boundary Extraction
+  const visitedRegions = new Uint8Array(gridW * gridH);
+  const regions: VectorRegion[] = [];
 
-          // Find adjacent edge pixel
-          let nextX = -1;
-          let nextY = -1;
+  for (let y = minY; y <= maxY; y++) {
+    for (let x = minX; x <= maxX; x++) {
+      const idx = y * gridW + x;
+      const colIdx = colorGrid[idx];
+      if (colIdx < 0 || visitedRegions[idx]) continue;
+
+      // BFS to find connected region
+      const compPixels: [number, number][] = [];
+      const cQueue = [idx];
+      visitedRegions[idx] = 1;
+      let cHead = 0;
+
+      while (cHead < cQueue.length) {
+        const cCurr = cQueue[cHead++];
+        const cx = cCurr % gridW;
+        const cy = Math.floor(cCurr / gridW);
+        compPixels.push([cx, cy]);
+
+        const adj = [
+          [cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]
+        ];
+        for (const [nx, ny] of adj) {
+          if (nx >= minX && nx <= maxX && ny >= minY && ny <= maxY) {
+            const nIdx = ny * gridW + nx;
+            if (!visitedRegions[nIdx] && colorGrid[nIdx] === colIdx) {
+              visitedRegions[nIdx] = 1;
+              cQueue.push(nIdx);
+            }
+          }
+        }
+      }
+
+      // Filter tiny noise specks
+      if (compPixels.length < 18) continue;
+
+      // Extract perimeter points
+      const perimeterPoints: [number, number][] = [];
+      for (const [px, py] of compPixels) {
+        let isBorder = false;
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            if (dx === 0 && dy === 0) continue;
+            const nx = px + dx;
+            const ny = py + dy;
+            if (nx < 0 || nx >= gridW || ny < 0 || ny >= gridH || colorGrid[ny * gridW + nx] !== colIdx) {
+              isBorder = true;
+              break;
+            }
+          }
+          if (isBorder) break;
+        }
+        if (isBorder) perimeterPoints.push([px, py]);
+      }
+
+      if (perimeterPoints.length >= 3) {
+        // Sort perimeter points radially around component center to form a clean closed polygon
+        let centerGX = 0, centerGY = 0;
+        for (const [px, py] of perimeterPoints) {
+          centerGX += px; centerGY += py;
+        }
+        centerGX /= perimeterPoints.length;
+        centerGY /= perimeterPoints.length;
+
+        perimeterPoints.sort((a, b) => {
+          const angleA = Math.atan2(a[1] - centerGY, a[0] - centerGX);
+          const angleB = Math.atan2(b[1] - centerGY, b[0] - centerGX);
+          return angleA - angleB;
+        });
+
+        const canvasPoly: [number, number][] = perimeterPoints.map(([px, py]) => [
+          toCanvasX(px),
+          toCanvasY(py),
+        ]);
+
+        const smoothPoly = ramerDouglasPeucker(canvasPoly, 2.5);
+        if (smoothPoly.length >= 3) {
+          const area = polygonArea(smoothPoly);
+          const hex = MS_PAINT_PALETTE_ENTRIES[colIdx].hex;
+          regions.push({ color: hex, polygon: smoothPoly, area });
+        }
+      }
+    }
+  }
+
+  // 5. Trace Continuous Outline & Edge Strokes
+  const isEdge = new Uint8Array(gridW * gridH);
+  for (let y = minY; y <= maxY; y++) {
+    for (let x = minX; x <= maxX; x++) {
+      const idx = y * gridW + x;
+      const c = colorGrid[idx];
+      if (c < 0) continue;
+      // Edge if adjacent to background or different color
+      const right = x < gridW - 1 ? colorGrid[idx + 1] : -1;
+      const down = y < gridH - 1 ? colorGrid[idx + gridW] : -1;
+      if (right !== c || down !== c) {
+        isEdge[idx] = 1;
+      }
+    }
+  }
+
+  const visitedEdges = new Uint8Array(gridW * gridH);
+  const strokes: VectorStroke[] = [];
+  const draftLines: [number, number][][] = [];
+
+  for (let y = minY; y <= maxY; y++) {
+    for (let x = minX; x <= maxX; x++) {
+      const idx = y * gridW + x;
+      if (isEdge[idx] && !visitedEdges[idx]) {
+        const chain: [number, number][] = [];
+        let cx = x, cy = y;
+        let isSilhouette = false;
+
+        while (cx >= 0 && cx < gridW && cy >= 0 && cy < gridH && isEdge[cy * gridW + cx] && !visitedEdges[cy * gridW + cx]) {
+          visitedEdges[cy * gridW + cx] = 1;
+          const cX = toCanvasX(cx);
+          const cY = toCanvasY(cy);
+          chain.push([cX, cY]);
+
+          if (isBg[cy * gridW + cx] || (cx > 0 && isBg[cy * gridW + cx - 1]) || (cx < gridW - 1 && isBg[cy * gridW + cx + 1])) {
+            isSilhouette = true;
+          }
+
+          // Step to next adjacent edge
+          let nextX = -1, nextY = -1;
           for (let dy = -1; dy <= 1; dy++) {
             for (let dx = -1; dx <= 1; dx++) {
               if (dx === 0 && dy === 0) continue;
-              const nx = cx + dx;
-              const ny = cy + dy;
+              const nx = cx + dx, ny = cy + dy;
               if (nx >= 0 && nx < gridW && ny >= 0 && ny < gridH) {
                 const nIdx = ny * gridW + nx;
-                if (isEdge[nIdx] && !visited[nIdx]) {
-                  nextX = nx;
-                  nextY = ny;
+                if (isEdge[nIdx] && !visitedEdges[nIdx]) {
+                  nextX = nx; nextY = ny;
                   break;
                 }
               }
             }
             if (nextX !== -1) break;
           }
-          cx = nextX;
-          cy = nextY;
+          cx = nextX; cy = nextY;
         }
 
-        if (poly.length >= 4) {
-          // Simplify polyline to eliminate noise and create hand-drawn curves
-          const smoothPoly = ramerDouglasPeucker(poly, 2.2);
-          paths.push(smoothPoly);
+        if (chain.length >= 3) {
+          const smoothChain = ramerDouglasPeucker(chain, 2.0);
+          if (smoothChain.length >= 2) {
+            strokes.push({
+              points: smoothChain,
+              strokeWidth: isSilhouette ? 5.5 : 4.0,
+              color: PAINT_PALETTE.black,
+            });
+            draftLines.push(smoothChain);
+          }
         }
       }
     }
   }
 
-  // Render quantized color image for fill phase
-  colCtx.imageSmoothingEnabled = false;
-  colCtx.drawImage(off, 0, 0, targetW, targetH);
+  // 6. Guideline Ellipses & Sparkles for Draft Phase & MS Paint Polish
+  const guideEllipses = [
+    {
+      cx: offsetX + drawW / 2,
+      cy: offsetY + drawH / 2,
+      rx: drawW * 0.44,
+      ry: drawH * 0.44,
+    },
+  ];
 
-  return { paths, colorCanvas, offsetX, offsetY, targetW, targetH };
+  const sparkles: [number, number][] = [
+    [offsetX - 25, offsetY + 30],
+    [offsetX + drawW + 25, offsetY + 50],
+    [offsetX + drawW * 0.85, offsetY - 20],
+  ];
+
+  return {
+    regions,
+    strokes,
+    draftLines,
+    guideEllipses,
+    sparkles,
+    paths: draftLines,
+  };
 }
 
 /**
@@ -1717,56 +1968,109 @@ export function drawPresetOverImage(
   ctx: CanvasRenderingContext2D,
   phase: DrawPhase = "full"
 ) {
-  const { paths, colorCanvas, offsetX, offsetY, targetW, targetH } = data;
+  const { regions, strokes, draftLines, guideEllipses, sparkles } = data;
 
-  // Background is clean white paper
+  // Background is pure clean paper white
   ctx.fillStyle = PAINT_PALETTE.white;
   ctx.fillRect(0, 0, 800, 500);
 
   // Phase 1: Draft - Faint blue pencil sketch lines traced over reference
   if (phase === "draft") {
     ctx.save();
+
+    // 1. Light proportion guideline circles
+    ctx.strokeStyle = "rgba(112, 146, 190, 0.45)";
+    ctx.lineWidth = 2.0;
+    for (const g of guideEllipses || []) {
+      ctx.beginPath();
+      ctx.ellipse(g.cx, g.cy, Math.max(10, g.rx), Math.max(10, g.ry), 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // 2. Draft pencil contour lines
     ctx.strokeStyle = PAINT_PALETTE.draftBlue;
     ctx.lineWidth = 2.5;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
-    paths.forEach((poly) => {
-      if (poly.length < 2) return;
+    for (const poly of draftLines || []) {
+      if (poly.length < 2) continue;
       ctx.beginPath();
       ctx.moveTo(poly[0][0], poly[0][1]);
       for (let i = 1; i < poly.length; i++) {
         ctx.lineTo(poly[i][0], poly[i][1]);
       }
       ctx.stroke();
-    });
+    }
 
     ctx.restore();
     return;
   }
 
-  // Phase 3 & 4: Pour flat vibrant color bucket fills
+  // Phase 3 & 4: Pour flat vibrant color bucket fills (sorted by area descending)
   if (phase === "fill" || phase === "full") {
-    ctx.drawImage(colorCanvas, offsetX, offsetY, targetW, targetH);
+    ctx.save();
+    const sortedRegions = [...(regions || [])].sort((a, b) => b.area - a.area);
+
+    for (const reg of sortedRegions) {
+      if (!reg.polygon || reg.polygon.length < 3) continue;
+      ctx.fillStyle = reg.color;
+      ctx.beginPath();
+      ctx.moveTo(reg.polygon[0][0], reg.polygon[0][1]);
+      for (let i = 1; i < reg.polygon.length; i++) {
+        ctx.lineTo(reg.polygon[i][0], reg.polygon[i][1]);
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
   }
 
   // Phase 2, 3, & 4: Ink bold black MS Paint outlines over the contours
   if (phase === "ink" || phase === "fill" || phase === "full") {
     ctx.save();
-    ctx.strokeStyle = PAINT_PALETTE.black;
-    ctx.lineWidth = 5.5;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
-    paths.forEach((poly) => {
-      if (poly.length < 2) return;
+    for (const s of strokes || []) {
+      if (!s.points || s.points.length < 2) continue;
+      ctx.strokeStyle = s.color || PAINT_PALETTE.black;
+      ctx.lineWidth = s.strokeWidth || 5.5;
+
       ctx.beginPath();
-      ctx.moveTo(poly[0][0], poly[0][1]);
-      for (let i = 1; i < poly.length; i++) {
-        ctx.lineTo(poly[i][0], poly[i][1]);
+      ctx.moveTo(s.points[0][0], s.points[0][1]);
+      for (let i = 1; i < s.points.length; i++) {
+        // Add tiny hand-drawn jitter for authentic MS Paint charm
+        const jx = Math.sin(i * 2.1) * 0.7;
+        const jy = Math.cos(i * 1.7) * 0.7;
+        ctx.lineTo(s.points[i][0] + jx, s.points[i][1] + jy);
       }
       ctx.stroke();
-    });
+    }
+
+    // Cute MS Paint finishing touches on full phase
+    if (phase === "full") {
+      // Draw cute yellow stars
+      for (const [sx, sy] of sparkles || []) {
+        if (sx > 20 && sx < 780 && sy > 20 && sy < 480) {
+          ctx.fillStyle = PAINT_PALETTE.yellow;
+          ctx.strokeStyle = PAINT_PALETTE.black;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(sx, sy - 8);
+          ctx.lineTo(sx + 3, sy - 2);
+          ctx.lineTo(sx + 8, sy);
+          ctx.lineTo(sx + 3, sy + 2);
+          ctx.lineTo(sx, sy + 8);
+          ctx.lineTo(sx - 3, sy + 2);
+          ctx.lineTo(sx - 8, sy);
+          ctx.lineTo(sx - 3, sy - 2);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+      }
+    }
 
     ctx.restore();
   }
