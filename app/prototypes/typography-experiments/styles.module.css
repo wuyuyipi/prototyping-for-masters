@@ -653,10 +653,6 @@
   transform: scale(0.95);
 }
 
-.playerButtonActive {
-  color: #ED6A85;
-}
-
 .playerButtonActive::after {
   content: '';
   position: absolute;
@@ -667,6 +663,31 @@
   height: 4px;
   border-radius: 50%;
   background-color: #ED6A85;
+}
+
+.playerModeButton {
+  background: none;
+  border: none;
+  color: #1A2628;
+  cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  transition: color 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  line-height: 1;
+  border-radius: 6px;
+}
+
+.playerModeButton:hover {
+  color: #ED6A85;
+  background-color: rgba(237, 106, 133, 0.08);
+  transform: scale(1.08);
+}
+
+.playerModeButton:active {
+  transform: scale(0.95);
 }
 
 .progressBarContainer {

@@ -839,15 +839,6 @@ export default function TypographyExperimentsPrototype() {
           <div className={styles.playerButtonsRow}>
             <button
               type="button"
-              className={`${styles.playerNavButton} ${playbackMode === 'shuffle' ? styles.playerButtonActive : ''}`}
-              onClick={() => handleModeChange(playbackMode === 'shuffle' ? 'loop' : 'shuffle')}
-              title={playbackMode === 'shuffle' ? "Shuffle is ON (Click for Loop)" : "Enable Shuffle"}
-              aria-label="Toggle shuffle mode"
-            >
-              <ShuffleIcon size={18} />
-            </button>
-            <button
-              type="button"
               className={styles.playerNavButton}
               onClick={handlePrevTrack}
               title="Previous song"
@@ -875,12 +866,12 @@ export default function TypographyExperimentsPrototype() {
             </button>
             <button
               type="button"
-              className={`${styles.playerNavButton} ${playbackMode === 'loop' ? styles.playerButtonActive : ''}`}
+              className={styles.playerModeButton}
               onClick={() => handleModeChange(playbackMode === 'loop' ? 'shuffle' : 'loop')}
-              title={playbackMode === 'loop' ? "Loop is ON (Click for Shuffle)" : "Enable Loop"}
-              aria-label="Toggle loop mode"
+              title={playbackMode === 'loop' ? "Loop Mode: Playing in order (Click to switch to Shuffle)" : "Shuffle Mode: Playing randomly (Click to switch to Loop)"}
+              aria-label={playbackMode === 'loop' ? "Current mode: Loop. Click to switch to Shuffle" : "Current mode: Shuffle. Click to switch to Loop"}
             >
-              <LoopIcon size={18} />
+              {playbackMode === 'loop' ? <LoopIcon size={18} /> : <ShuffleIcon size={18} />}
             </button>
           </div>
 
