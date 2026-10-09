@@ -28,6 +28,12 @@ export default function Home() {
       path: '/prototypes/doodle-creator',
       tag: '04 / Prototype'
     },
+    {
+      title: 'Weather',
+      description: 'Interactive weather display and multi-city forecast prototype',
+      path: '/prototypes/weather',
+      tag: '05 / Prototype'
+    },
     // Add your new prototypes here like this:
     // {
     //   title: 'Your new prototype',
