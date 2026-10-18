@@ -3,6 +3,12 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import styles from "./styles.module.css";
+import {
+  MET_WEATHER_MASTERWORKS,
+  MetArtworkData,
+  resolveWeatherArtCategory,
+} from "./metArtworks";
+import { MannequinDoll } from "./MannequinDoll";
 
 const DEFAULT_API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY || "";
 
@@ -924,6 +930,53 @@ function evaluateUserOutfit(
   };
 }
 
+function getDollReaction(critique: GameCritique, weather: WeatherPayload): string {
+  const tempF =
+    weather.units === "imperial"
+      ? weather.temp
+      : Math.round((weather.temp * 9) / 5 + 32);
+  const cond = (weather.condition || "").toLowerCase();
+  const isRain =
+    cond.includes("rain") ||
+    cond.includes("drizzle") ||
+    cond.includes("shower") ||
+    cond.includes("thunder");
+  const isSnow =
+    cond.includes("snow") ||
+    cond.includes("sleet") ||
+    cond.includes("blizzard");
+
+  if (critique.score >= 88) {
+    if (isRain) return "Shielded & dry! Ready for wet weather. ☔✨";
+    if (isSnow) return "Snug & insulated! Winter cold won't bother me. ❄️✨";
+    if (tempF > 76) return "Airy and cool! Perfect for warm sunshine. ☀️✨";
+    return "Feeling great! This outfit harmonizes with today's weather. ✨";
+  }
+
+  if (critique.thermalStatus === "Severely Underdressed") {
+    if (isSnow) return `Brrr! Shivering in ${tempF}° snow! I desperately need a heavy coat and boots! 🥶`;
+    return `Brrr! Freezing in ${tempF}°! Please put on warmer layers or a jacket! 🥶`;
+  }
+
+  if (critique.thermalStatus === "Overheated" || critique.thermalStatus === "Sweltering Excess") {
+    return `Whew, it's ${tempF}°! I'm way too hot in all these heavy layers! 🥵`;
+  }
+
+  if (isRain && critique.moistureStatus.includes("Damp")) {
+    return "Watch out, it's raining! I'll get soaked without an umbrella or rain shell! 🌧️";
+  }
+
+  if (weather.windSpeed >= 16 && critique.windStatus.includes("Wind Exposed")) {
+    return `Gusty winds (${weather.windSpeed} ${weather.units === "imperial" ? "mph" : "m/s"})! A windbreaker or jacket would help! 💨`;
+  }
+
+  if (critique.thermalStatus === "Slightly Chilly") {
+    return `A little chilly for ${tempF}°. Adding an extra layer will make it just right. 🧥`;
+  }
+
+  return "Almost there! Adjust a piece or two to suit today's atmospheric reading.";
+}
+
 export default function WeatherPrototype() {
   const [weather, setWeather] = useState<WeatherPayload | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -941,16 +994,31 @@ export default function WeatherPrototype() {
   }>({ type: "city", city: "New York" });
   const [selectedPiece, setSelectedPiece] = useState<OutfitPiece | null>(null);
   const [userOutfit, setUserOutfit] = useState<UserDressingOutfit>(DEFAULT_USER_OUTFIT);
+  const [activeStudioTab, setActiveStudioTab] = useState<
+    "outerwear" | "top" | "bottom" | "shoes" | "accessory"
+  >("top");
+  const [artworkIndex, setArtworkIndex] = useState<number>(0);
+  const [artworkZoomed, setArtworkZoomed] = useState<boolean>(false);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setSelectedPiece(null);
+        setArtworkZoomed(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  // Reset artwork cycle when weather condition changes
+  const prevConditionRef = useRef<string>("");
+  useEffect(() => {
+    if (weather?.condition && weather.condition !== prevConditionRef.current) {
+      prevConditionRef.current = weather.condition;
+      setArtworkIndex(0);
+    }
+  }, [weather?.condition]);
 
   // Keep a ref to activeQuery to prevent stale closures
   const activeQueryRef = useRef(activeQuery);
@@ -1235,6 +1303,17 @@ export default function WeatherPrototype() {
   const tempSymbol = unit === "imperial" ? "°F" : "°C";
   const speedSymbol = unit === "imperial" ? "mph" : "m/s";
 
+  // Derive atmospheric Met artwork matching live weather conditions
+  const artCategory = weather
+    ? resolveWeatherArtCategory(weather.condition, unit === "metric" ? (weather.temp * 9) / 5 + 32 : weather.temp)
+    : "clouds";
+  const artCategoryWorks = MET_WEATHER_MASTERWORKS[artCategory] || MET_WEATHER_MASTERWORKS.clouds;
+  const currentArtwork: MetArtworkData = artCategoryWorks[artworkIndex % artCategoryWorks.length];
+
+  const handleCycleArtwork = () => {
+    setArtworkIndex((prev) => (prev + 1) % artCategoryWorks.length);
+  };
+
   return (
     <div className={styles.container}>
       {/* Floating Bottom Course & Prototype Tag */}
@@ -1354,6 +1433,8 @@ export default function WeatherPrototype() {
               </button>
             </div>
           )}
+
+
 
           {/* Live Weather Card */}
           {weather && (
@@ -1495,522 +1576,561 @@ export default function WeatherPrototype() {
             </>
           )}
 
-          {/* Styling Suggestions Section */}
+          {/* ===============================================================
+              Two-Column Fashion Suite: Styling Suggestions + Paper-Doll Studio
+              =============================================================== */}
           {weather && (
-            <>
-              <div className={styles.sectionHeader}>
-                <span className={styles.sectionBadge}>Wardrobe</span>
-                <h2 className={styles.sectionTitle}>Styling Suggestions</h2>
-                <div className={styles.sectionRule} />
-              </div>
+            <section className={styles.fashionDuoRow} aria-label="Weather Wardrobe & Climate Dressing Studio">
+              {/* Left Column: Curated Styling Suggestions */}
+              <div className={styles.fashionDuoCol}>
+                <div className={styles.sectionHeader} style={{ marginTop: 0 }}>
+                  <span className={styles.sectionBadge}>Lookbook</span>
+                  <h2 className={styles.sectionTitle}>Styling Suggestions</h2>
+                  <div className={styles.sectionRule} />
+                </div>
 
-              {(() => {
-                const styling = getStylingSuggestion(weather);
-                return (
-                  <section className={styles.stylingCard} aria-label="Weather Styling Suggestions">
-                    <div className={styles.stylingHeader}>
-                      <div className={styles.stylingTitleGroup}>
-                        <span className={styles.stylingVibeBadge}>{styling.vibe}</span>
-                        <h3 className={styles.stylingTitle}>Curated Weather Wardrobe</h3>
-                        <p className={styles.stylingSummary}>{styling.summary}</p>
+                {(() => {
+                  const styling = getStylingSuggestion(weather);
+                  return (
+                    <div className={styles.stylingCard} aria-label="Weather Styling Suggestions">
+                      <div className={styles.stylingHeader}>
+                        <div className={styles.stylingTitleGroup}>
+                          <span className={styles.stylingVibeBadge}>{styling.vibe}</span>
+                          <h3 className={styles.stylingTitle}>Curated Weather Wardrobe</h3>
+                          <p className={styles.stylingSummary}>{styling.summary}</p>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className={styles.outfitGrid}>
-                      {styling.pieces.map((piece, index) => {
-                        const popupPosClass =
-                          index === 0
-                            ? styles.outfitPopupLeft
-                            : index === styling.pieces.length - 1
-                            ? styles.outfitPopupRight
-                            : "";
-                        const arrowPosClass =
-                          index === 0
-                            ? styles.popupArrowLeft
-                            : index === styling.pieces.length - 1
-                            ? styles.popupArrowRight
-                            : "";
+                      <div className={styles.outfitGrid}>
+                        {styling.pieces.map((piece, index) => {
+                          const popupPosClass =
+                            index % 2 === 0
+                              ? styles.outfitPopupLeft
+                              : styles.outfitPopupRight;
+                          const arrowPosClass =
+                            index % 2 === 0
+                              ? styles.popupArrowLeft
+                              : styles.popupArrowRight;
 
-                        return (
-                          <div
-                            key={piece.category}
-                            className={styles.outfitItem}
-                            tabIndex={0}
-                            role="button"
-                            aria-haspopup="dialog"
-                            aria-label={`${piece.category}: ${piece.label}. Click to inspect reference look.`}
-                            onClick={() => setSelectedPiece(piece)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" || e.key === " ") {
-                                e.preventDefault();
-                                setSelectedPiece(piece);
-                              }
-                            }}
-                          >
-                            <div className={styles.outfitHeaderRow}>
-                              <span className={styles.outfitCategory}>{piece.category}</span>
-                              <span className={styles.outfitIndex}>{`0${index + 1}`}</span>
-                            </div>
-
-                            <div className={styles.outfitLabel}>{piece.label}</div>
-
-                            <div className={styles.outfitActionPrompt}>
-                              <span className={styles.outfitActionDot} />
-                              <span>Preview Look ↗</span>
-                            </div>
-
-                            {/* Hover Popover with Image */}
+                          return (
                             <div
-                              className={`${styles.outfitPopup} ${popupPosClass}`}
-                              role="tooltip"
+                              key={piece.category}
+                              className={styles.outfitItem}
+                              tabIndex={0}
+                              role="button"
+                              aria-haspopup="dialog"
+                              aria-label={`${piece.category}: ${piece.label}. Click to inspect reference look.`}
+                              onClick={() => setSelectedPiece(piece)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                  e.preventDefault();
+                                  setSelectedPiece(piece);
+                                }
+                              }}
                             >
-                              <div className={styles.popupImageContainer}>
-                                <img
-                                  src={piece.image}
-                                  alt={piece.imageAlt}
-                                  className={styles.popupImage}
-                                  loading="lazy"
-                                />
-                                <span className={styles.popupImageBadge}>Lookbook Ref</span>
+                              <div className={styles.outfitHeaderRow}>
+                                <span className={styles.outfitCategory}>{piece.category}</span>
+                                <span className={styles.outfitIndex}>{`0${index + 1}`}</span>
                               </div>
 
-                              <div className={styles.popupBody}>
-                                <span className={styles.popupCategory}>{piece.category}</span>
-                                <h4 className={styles.popupTitle}>{piece.label}</h4>
-                                <p className={styles.popupTip}>{piece.styleTip}</p>
+                              <div className={styles.outfitLabel}>{piece.label}</div>
 
-                                <div className={styles.popupSpecs}>
-                                  <span className={styles.popupSpecsLabel}>Fabric &amp; Cut</span>
-                                  <span className={styles.popupSpecsText}>{piece.details}</span>
+                              <div className={styles.outfitActionPrompt}>
+                                <span className={styles.outfitActionDot} />
+                                <span>Preview Look ↗</span>
+                              </div>
+
+                              {/* Hover Popover with Image */}
+                              <div
+                                className={`${styles.outfitPopup} ${popupPosClass}`}
+                                role="tooltip"
+                              >
+                                <div className={styles.popupImageContainer}>
+                                  <img
+                                    src={piece.image}
+                                    alt={piece.imageAlt}
+                                    className={styles.popupImage}
+                                    loading="lazy"
+                                  />
+                                  <span className={styles.popupImageBadge}>Lookbook Ref</span>
                                 </div>
 
-                                <div className={styles.popupClickHint}>Click box for expanded lookbook</div>
+                                <div className={styles.popupBody}>
+                                  <span className={styles.popupCategory}>{piece.category}</span>
+                                  <h4 className={styles.popupTitle}>{piece.label}</h4>
+                                  <p className={styles.popupTip}>{piece.styleTip}</p>
+
+                                  <div className={styles.popupSpecs}>
+                                    <span className={styles.popupSpecsLabel}>Fabric &amp; Cut</span>
+                                    <span className={styles.popupSpecsText}>{piece.details}</span>
+                                  </div>
+
+                                  <div className={styles.popupClickHint}>Click box for expanded lookbook</div>
+                                </div>
+
+                                <div className={`${styles.popupArrow} ${arrowPosClass}`} />
                               </div>
-
-                              <div className={`${styles.popupArrow} ${arrowPosClass}`} />
                             </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {styling.advisory && (
-                      <div className={styles.advisoryBanner}>
-                        <span className={styles.advisoryTag}>Advisory</span>
-                        <span className={styles.advisoryText}>{styling.advisory}</span>
+                          );
+                        })}
                       </div>
-                    )}
-                  </section>
-                );
-              })()}
-            </>
-          )}
 
-          {/* Climate Dressing Game */}
-          {weather && (
-            <>
-              <div className={styles.sectionHeader}>
-                <span className={styles.sectionBadge}>Interactive</span>
-                <h2 className={styles.sectionTitle}>The Climate Dressing Room</h2>
-                <div className={styles.sectionRule} />
+                      {styling.advisory && (
+                        <div className={styles.advisoryBanner}>
+                          <span className={styles.advisoryTag}>Advisory</span>
+                          <span className={styles.advisoryText}>{styling.advisory}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
 
-              {(() => {
-                const critique = evaluateUserOutfit(userOutfit, weather);
-                const curOuter =
-                  WARDROBE_OPTIONS.outerwear.find((item) => item.id === userOutfit.outerwear) ||
-                  WARDROBE_OPTIONS.outerwear[0];
-                const curTop =
-                  WARDROBE_OPTIONS.top.find((item) => item.id === userOutfit.top) ||
-                  WARDROBE_OPTIONS.top[0];
-                const curBottom =
-                  WARDROBE_OPTIONS.bottom.find((item) => item.id === userOutfit.bottom) ||
-                  WARDROBE_OPTIONS.bottom[0];
-                const curShoes =
-                  WARDROBE_OPTIONS.shoes.find((item) => item.id === userOutfit.shoes) ||
-                  WARDROBE_OPTIONS.shoes[0];
-                const curAccessory =
-                  WARDROBE_OPTIONS.accessory.find((item) => item.id === userOutfit.accessory) ||
-                  WARDROBE_OPTIONS.accessory[0];
+              {/* Right Column: Minimalist Paper-Doll Dressing Studio */}
+              <div className={styles.fashionDuoCol}>
+                <div className={styles.sectionHeader} style={{ marginTop: 0 }}>
+                  <span className={styles.sectionBadge}>Interactive</span>
+                  <h2 className={styles.sectionTitle}>Dressing Studio</h2>
+                  <div className={styles.sectionRule} />
+                </div>
 
-                const statusPillClass =
-                  critique.pillVariant === "perfect"
-                    ? styles.critiqueStatusPerfect
-                    : critique.pillVariant === "good"
-                    ? styles.critiqueStatusGood
-                    : critique.pillVariant === "warning"
-                    ? styles.critiqueStatusWarning
-                    : styles.critiqueStatusDanger;
+                {(() => {
+                  const critique = evaluateUserOutfit(userOutfit, weather);
+                  const dollReaction = getDollReaction(critique, weather);
 
-                const handleRandomize = () => {
-                  const pickRandom = (arr: GameWardrobeItem[]) =>
-                    arr[Math.floor(Math.random() * arr.length)].id;
-                  setUserOutfit({
-                    outerwear: pickRandom(WARDROBE_OPTIONS.outerwear),
-                    top: pickRandom(WARDROBE_OPTIONS.top),
-                    bottom: pickRandom(WARDROBE_OPTIONS.bottom),
-                    shoes: pickRandom(WARDROBE_OPTIONS.shoes),
-                    accessory: pickRandom(WARDROBE_OPTIONS.accessory),
-                  });
-                };
+                  const statusPillClass =
+                    critique.pillVariant === "perfect"
+                      ? styles.dollScorePillPerfect
+                      : critique.pillVariant === "good"
+                      ? styles.dollScorePillGood
+                      : critique.pillVariant === "warning"
+                      ? styles.dollScorePillWarning
+                      : styles.dollScorePillDanger;
 
-                const handleAutoMatch = () => {
-                  const tempF =
-                    weather.units === "imperial"
-                      ? weather.temp
-                      : Math.round((weather.temp * 9) / 5 + 32);
-                  const cond = (weather.condition || "").toLowerCase();
-                  const isRain =
-                    cond.includes("rain") ||
-                    cond.includes("drizzle") ||
-                    cond.includes("shower") ||
-                    cond.includes("thunder");
-                  const isSnow =
-                    cond.includes("snow") ||
-                    cond.includes("sleet") ||
-                    cond.includes("flurr");
+                  const handleRandomize = () => {
+                    const pickRandom = (arr: GameWardrobeItem[]) =>
+                      arr[Math.floor(Math.random() * arr.length)].id;
+                    setUserOutfit({
+                      outerwear: pickRandom(WARDROBE_OPTIONS.outerwear),
+                      top: pickRandom(WARDROBE_OPTIONS.top),
+                      bottom: pickRandom(WARDROBE_OPTIONS.bottom),
+                      shoes: pickRandom(WARDROBE_OPTIONS.shoes),
+                      accessory: pickRandom(WARDROBE_OPTIONS.accessory),
+                    });
+                  };
 
-                  if (isSnow) {
-                    setUserOutfit({
-                      outerwear: "down_parka",
-                      top: "cable_knit",
-                      bottom: "thermal_pants",
-                      shoes: "arctic_snow_boots",
-                      accessory: "cashmere_scarf_beanie",
-                    });
-                  } else if (isRain) {
-                    setUserOutfit({
-                      outerwear: "trench_shell",
-                      top: "heavy_tee",
-                      bottom: "selvedge_denim",
-                      shoes: "chelsea_boots",
-                      accessory: "windproof_umbrella",
-                    });
-                  } else if (tempF < 42) {
-                    setUserOutfit({
-                      outerwear: "wool_overcoat",
-                      top: "merino_knit",
-                      bottom: "corduroy_pants",
-                      shoes: "goodyear_boots",
-                      accessory: "cashmere_scarf_beanie",
-                    });
-                  } else if (tempF < 58) {
-                    setUserOutfit({
-                      outerwear: "chore_coat",
-                      top: "oxford_shirt",
-                      bottom: "selvedge_denim",
-                      shoes: "canvas_sneakers",
-                      accessory: "canvas_tote",
-                    });
-                  } else if (tempF < 72) {
-                    setUserOutfit({
-                      outerwear: "denim_jacket",
-                      top: "heavy_tee",
-                      bottom: "linen_trousers",
-                      shoes: "leather_mules",
-                      accessory: "acetate_shades",
-                    });
-                  } else if (tempF < 82) {
-                    setUserOutfit({
-                      outerwear: "linen_overshirt",
-                      top: "camp_shirt",
-                      bottom: "chino_shorts",
-                      shoes: "leather_mules",
-                      accessory: "acetate_shades",
-                    });
-                  } else {
-                    setUserOutfit({
-                      outerwear: "none",
-                      top: "ribbed_tank",
-                      bottom: "linen_shorts",
-                      shoes: "flip_flops",
-                      accessory: "straw_hat",
-                    });
-                  }
-                };
+                  const handleAutoMatch = () => {
+                    const tempF =
+                      weather.units === "imperial"
+                        ? weather.temp
+                        : Math.round((weather.temp * 9) / 5 + 32);
+                    const cond = (weather.condition || "").toLowerCase();
+                    const isRain =
+                      cond.includes("rain") ||
+                      cond.includes("drizzle") ||
+                      cond.includes("shower") ||
+                      cond.includes("thunder");
+                    const isSnow =
+                      cond.includes("snow") ||
+                      cond.includes("sleet") ||
+                      cond.includes("flurr");
 
-                const handleReset = () => {
-                  setUserOutfit(DEFAULT_USER_OUTFIT);
-                };
+                    if (isSnow) {
+                      setUserOutfit({
+                        outerwear: "down_parka",
+                        top: "cable_knit",
+                        bottom: "thermal_pants",
+                        shoes: "arctic_snow_boots",
+                        accessory: "cashmere_scarf_beanie",
+                      });
+                    } else if (isRain) {
+                      setUserOutfit({
+                        outerwear: "trench_shell",
+                        top: "heavy_tee",
+                        bottom: "selvedge_denim",
+                        shoes: "chelsea_boots",
+                        accessory: "windproof_umbrella",
+                      });
+                    } else if (tempF < 42) {
+                      setUserOutfit({
+                        outerwear: "wool_overcoat",
+                        top: "merino_knit",
+                        bottom: "corduroy_pants",
+                        shoes: "goodyear_boots",
+                        accessory: "cashmere_scarf_beanie",
+                      });
+                    } else if (tempF < 58) {
+                      setUserOutfit({
+                        outerwear: "chore_coat",
+                        top: "oxford_shirt",
+                        bottom: "selvedge_denim",
+                        shoes: "canvas_sneakers",
+                        accessory: "canvas_tote",
+                      });
+                    } else if (tempF < 72) {
+                      setUserOutfit({
+                        outerwear: "denim_jacket",
+                        top: "heavy_tee",
+                        bottom: "linen_trousers",
+                        shoes: "leather_mules",
+                        accessory: "acetate_shades",
+                      });
+                    } else if (tempF < 82) {
+                      setUserOutfit({
+                        outerwear: "linen_overshirt",
+                        top: "camp_shirt",
+                        bottom: "chino_shorts",
+                        shoes: "leather_mules",
+                        accessory: "acetate_shades",
+                      });
+                    } else {
+                      setUserOutfit({
+                        outerwear: "none",
+                        top: "ribbed_tank",
+                        bottom: "linen_shorts",
+                        shoes: "flip_flops",
+                        accessory: "straw_hat",
+                      });
+                    }
+                  };
 
-                return (
-                  <section className={styles.gameCard} aria-label="Weather Dressing Game">
-                    <div className={styles.gameHeader}>
-                      <div className={styles.gameTitleGroup}>
-                        <span className={styles.gameBadge}>Interactive Studio</span>
-                        <h3 className={styles.gameTitle}>The Climate Dressing Room</h3>
-                        <p className={styles.gameSubtitle}>
-                          Assemble an outfit from the wardrobe rack below. Our stylist algorithm evaluates in real time whether your attire will protect you against today&apos;s weather ({weather.temp}{tempSymbol}, {weather.condition}, wind {weather.windSpeed} {weather.units === "imperial" ? "mph" : "m/s"}).
-                        </p>
-                      </div>
-                    </div>
+                  const handleReset = () => {
+                    setUserOutfit(DEFAULT_USER_OUTFIT);
+                  };
 
-                    <div className={styles.gameDashboard}>
-                      {/* Left: Current Active Mannequin Rack */}
-                      <div className={styles.mannequinPanel}>
-                        <div className={styles.panelHeader}>
-                          <span className={styles.panelTitle}>Equipped Ensemble</span>
-                          <span className={styles.panelWarmthTotal}>
-                            Warmth: {critique.totalWarmth} / Target: {critique.targetWarmth}
+                  const categories: {
+                    id: "outerwear" | "top" | "bottom" | "shoes" | "accessory";
+                    label: string;
+                    icon: string;
+                  }[] = [
+                    { id: "outerwear", label: "Outer", icon: "🧥" },
+                    { id: "top", label: "Top", icon: "👕" },
+                    { id: "bottom", label: "Bottom", icon: "👖" },
+                    { id: "shoes", label: "Shoes", icon: "👟" },
+                    { id: "accessory", label: "Gear", icon: "🧣" },
+                  ];
+
+                  const activeItems = WARDROBE_OPTIONS[activeStudioTab];
+
+                  return (
+                    <div className={styles.paperDollCard} aria-label="Paper-Doll Climate Dressing Studio">
+                      {/* Mannequin Stage & Live Weather Critique */}
+                      <div className={styles.dollStage}>
+                        {/* Dynamic Speech Bubble */}
+                        <div className={styles.dollSpeechBubble} role="status">
+                          <span>{dollReaction}</span>
+                          <div className={styles.dollSpeechArrow} />
+                        </div>
+
+                        {/* Minimalist Vector Mannequin Figure */}
+                        <div className={styles.dollFigureWrapper}>
+                          <MannequinDoll
+                            outerwear={userOutfit.outerwear}
+                            top={userOutfit.top}
+                            bottom={userOutfit.bottom}
+                            shoes={userOutfit.shoes}
+                            accessory={userOutfit.accessory}
+                          />
+                        </div>
+
+                        {/* Live Score & Warmth Ledger */}
+                        <div className={styles.dollReadinessRow}>
+                          <span className={`${styles.dollScorePill} ${statusPillClass}`}>
+                            {critique.statusPill} · {critique.score}/100
+                          </span>
+                          <span className={styles.dollWarmthMetric}>
+                            Warmth {critique.totalWarmth}/{critique.targetWarmth} ({weather.temp}{tempSymbol})
                           </span>
                         </div>
-
-                        <div className={styles.wornList}>
-                          <div className={styles.wornSlot}>
-                            <div className={styles.wornSlotLeft}>
-                              <span className={styles.wornSlotCategory}>Outerwear</span>
-                              <span className={styles.wornSlotName}>{curOuter.name}</span>
-                            </div>
-                            <span className={styles.wornWarmthBadge}>+{curOuter.warmth}</span>
-                          </div>
-
-                          <div className={styles.wornSlot}>
-                            <div className={styles.wornSlotLeft}>
-                              <span className={styles.wornSlotCategory}>Top &amp; Layer</span>
-                              <span className={styles.wornSlotName}>{curTop.name}</span>
-                            </div>
-                            <span className={styles.wornWarmthBadge}>+{curTop.warmth}</span>
-                          </div>
-
-                          <div className={styles.wornSlot}>
-                            <div className={styles.wornSlotLeft}>
-                              <span className={styles.wornSlotCategory}>Bottoms</span>
-                              <span className={styles.wornSlotName}>{curBottom.name}</span>
-                            </div>
-                            <span className={styles.wornWarmthBadge}>+{curBottom.warmth}</span>
-                          </div>
-
-                          <div className={styles.wornSlot}>
-                            <div className={styles.wornSlotLeft}>
-                              <span className={styles.wornSlotCategory}>Footwear</span>
-                              <span className={styles.wornSlotName}>{curShoes.name}</span>
-                            </div>
-                            <span className={styles.wornWarmthBadge}>+{curShoes.warmth}</span>
-                          </div>
-
-                          <div className={styles.wornSlot}>
-                            <div className={styles.wornSlotLeft}>
-                              <span className={styles.wornSlotCategory}>Accessory</span>
-                              <span className={styles.wornSlotName}>{curAccessory.name}</span>
-                            </div>
-                            <span className={styles.wornWarmthBadge}>+{curAccessory.warmth}</span>
-                          </div>
-                        </div>
-
-                        <div className={styles.gameControls}>
-                          <button
-                            type="button"
-                            className={`${styles.gameBtn} ${styles.gameBtnAccent}`}
-                            onClick={handleRandomize}
-                          >
-                            Roll Random Look
-                          </button>
-                          <button
-                            type="button"
-                            className={styles.gameBtn}
-                            onClick={handleAutoMatch}
-                          >
-                            Auto-Match Weather
-                          </button>
-                          <button
-                            type="button"
-                            className={styles.gameBtn}
-                            onClick={handleReset}
-                          >
-                            Reset
-                          </button>
-                        </div>
                       </div>
 
-                      {/* Right: Stylist Critique Scorecard */}
-                      <div className={styles.critiquePanel}>
-                        <div className={styles.critiqueTop}>
-                          <div className={styles.critiqueGradeBadge}>
-                            {critique.grade}
-                          </div>
+                      {/* Category Switcher Tabs */}
+                      <div className={styles.dollCategoryTabs} role="tablist" aria-label="Wardrobe Categories">
+                        {categories.map((cat) => (
+                          <button
+                            key={cat.id}
+                            type="button"
+                            role="tab"
+                            aria-selected={activeStudioTab === cat.id}
+                            className={
+                              activeStudioTab === cat.id
+                                ? `${styles.dollCategoryTab} ${styles.dollCategoryTabActive}`
+                                : styles.dollCategoryTab
+                            }
+                            onClick={() => setActiveStudioTab(cat.id)}
+                          >
+                            <span>{cat.icon}</span> <span>{cat.label}</span>
+                          </button>
+                        ))}
+                      </div>
 
-                          <div className={styles.critiqueMetaGroup}>
-                            <span className={`${styles.critiqueStatusPill} ${statusPillClass}`}>
-                              {critique.statusPill}
-                            </span>
-                            <h4 className={styles.critiqueRatingTitle}>
-                              {critique.statusTitle}
-                            </h4>
-                          </div>
-                        </div>
+                      {/* Visual Item Inventory Tray */}
+                      <div className={styles.dollItemsGrid} role="tabpanel" aria-label={`${activeStudioTab} selection`}>
+                        {activeItems.map((item) => {
+                          const isEquipped = userOutfit[activeStudioTab] === item.id;
+                          return (
+                            <button
+                              key={item.id}
+                              type="button"
+                              className={
+                                isEquipped
+                                  ? `${styles.dollItemCard} ${styles.dollItemCardActive}`
+                                  : styles.dollItemCard
+                              }
+                              onClick={() =>
+                                setUserOutfit((prev) => ({
+                                  ...prev,
+                                  [activeStudioTab]: item.id,
+                                }))
+                              }
+                              title={item.description}
+                            >
+                              <span className={styles.dollItemCardName}>{item.name}</span>
+                              <div className={styles.dollItemCardFooter}>
+                                <span className={styles.dollItemCardWarmth}>
+                                  {item.warmth > 0 ? `+${item.warmth}` : "0"} warm
+                                </span>
+                                {isEquipped && (
+                                  <span className={styles.dollItemCardEquipped}>Worn ✓</span>
+                                )}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
 
-                        <div className={styles.critiqueScoreBarContainer}>
-                          <div className={styles.critiqueScoreBarHeader}>
-                            <span>Climate Readiness</span>
-                            <span>{critique.score} / 100</span>
-                          </div>
-                          <div className={styles.critiqueScoreTrack}>
-                            <div
-                              className={styles.critiqueScoreFill}
-                              style={{ width: `${critique.score}%` }}
-                            />
-                          </div>
-                        </div>
+                      {/* Quick Action Toolbar */}
+                      <div className={styles.dollActionToolbar}>
+                        <button
+                          type="button"
+                          className={`${styles.dollActionBtn} ${styles.dollActionBtnAccent}`}
+                          onClick={handleRandomize}
+                        >
+                          🎲 Random Look
+                        </button>
+                        <button
+                          type="button"
+                          className={styles.dollActionBtn}
+                          onClick={handleAutoMatch}
+                        >
+                          ✨ Auto-Match
+                        </button>
+                        <button
+                          type="button"
+                          className={styles.dollActionBtn}
+                          onClick={handleReset}
+                        >
+                          ↺ Reset
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            </section>
+          )}
 
-                        <p className={styles.critiqueNarrative}>
-                          {critique.narrative}
+          {/* ===============================================================
+              Art of the Weather Section (End of Page)
+              =============================================================== */}
+          {weather && currentArtwork && (
+            <section
+              className={styles.metArtSection}
+              aria-label="Art of the Weather"
+            >
+              <div className={styles.metArtCard}>
+                <header className={styles.metArtHeader}>
+                  <h2 className={styles.metArtHeaderTitle}>
+                    Art of the Weather
+                  </h2>
+                </header>
+
+                <div className={styles.metArtBodyGrid}>
+                  {/* Left Column: Visual Artwork Frame with Museum Matting */}
+                  <div className={styles.metArtVisualPane}>
+                    <div
+                      className={styles.metArtFrame}
+                      onClick={() => setArtworkZoomed(true)}
+                      title="Click to view full painting in high resolution"
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          setArtworkZoomed(true);
+                        }
+                      }}
+                    >
+                      <img
+                        key={currentArtwork.objectID}
+                        src={currentArtwork.primaryImageSmall || currentArtwork.primaryImage}
+                        alt={`${currentArtwork.title} by ${currentArtwork.artistDisplayName}`}
+                        className={styles.metArtImage}
+                        loading="eager"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (currentArtwork.remoteImage && target.src !== currentArtwork.remoteImage) {
+                            target.src = currentArtwork.remoteImage;
+                          }
+                        }}
+                      />
+                      <span className={styles.metArtZoomBadge}>
+                        🔍 View Large
+                      </span>
+                    </div>
+                    <div className={styles.metArtWeatherTag}>
+                      <span>{currentArtwork.weatherMood}</span>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Museum Label & Curatorial Connection */}
+                  <div className={styles.metArtInfoPane}>
+                    <div>
+                      <div className={styles.metArtMatchPill}>
+                        <span>Reflecting: {weather.condition} in {weather.city}</span>
+                      </div>
+
+                      <div className={styles.metArtTitleGroup} style={{ marginTop: "0.6rem" }}>
+                        <h3 className={styles.metArtTitle}>
+                          {currentArtwork.title}
+                        </h3>
+                        <p className={styles.metArtArtist}>
+                          {currentArtwork.artistDisplayName}
                         </p>
+                        {currentArtwork.artistDisplayBio && (
+                          <p className={styles.metArtArtistBio}>
+                            {currentArtwork.artistDisplayBio}
+                          </p>
+                        )}
+                      </div>
 
-                        <div className={styles.critiqueMetricsGrid}>
-                          <div className={styles.critiqueMetricItem}>
-                            <span className={styles.critiqueMetricLabel}>Thermal Feel</span>
-                            <span className={styles.critiqueMetricValue}>{critique.thermalStatus}</span>
-                          </div>
-
-                          <div className={styles.critiqueMetricItem}>
-                            <span className={styles.critiqueMetricLabel}>Wetness Defense</span>
-                            <span className={styles.critiqueMetricValue}>{critique.moistureStatus}</span>
-                          </div>
-
-                          <div className={styles.critiqueMetricItem}>
-                            <span className={styles.critiqueMetricLabel}>Wind Guard</span>
-                            <span className={styles.critiqueMetricValue}>{critique.windStatus}</span>
-                          </div>
+                      {/* Archival metadata ledger */}
+                      <div className={styles.metArtMetadataList}>
+                        <div className={styles.metArtMetaItem}>
+                          <span className={styles.metArtMetaLabel}>Date:</span>
+                          <span className={styles.metArtMetaValue}>{currentArtwork.objectDate}</span>
                         </div>
+                        <div className={styles.metArtMetaItem}>
+                          <span className={styles.metArtMetaLabel}>Medium:</span>
+                          <span className={styles.metArtMetaValue}>{currentArtwork.medium}</span>
+                        </div>
+                        {currentArtwork.dimensions && (
+                          <div className={styles.metArtMetaItem}>
+                            <span className={styles.metArtMetaLabel}>Dimensions:</span>
+                            <span className={styles.metArtMetaValue}>{currentArtwork.dimensions}</span>
+                          </div>
+                        )}
+                        <div className={styles.metArtMetaItem}>
+                          <span className={styles.metArtMetaLabel}>Department:</span>
+                          <span className={styles.metArtMetaValue}>{currentArtwork.department}</span>
+                        </div>
+                        {currentArtwork.creditLine && (
+                          <div className={styles.metArtMetaItem}>
+                            <span className={styles.metArtMetaLabel}>Credit:</span>
+                            <span className={styles.metArtMetaValue}>{currentArtwork.creditLine}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Curatorial connection to today's atmosphere */}
+                      <div className={styles.metArtCuratorialBox} style={{ marginTop: "0.75rem" }}>
+                        <span className={styles.metArtCuratorialLead}>
+                          Curatorial Atmospheric Note
+                        </span>
+                        <p className={styles.metArtCuratorialText}>
+                          “{currentArtwork.curatorialNote}”
+                        </p>
                       </div>
                     </div>
 
-                    {/* Bottom: Wardrobe Trays */}
-                    <div className={styles.wardrobeTrays}>
-                      {/* Outerwear Tray */}
-                      <div className={styles.traySection}>
-                        <div className={styles.trayHeader}>
-                          <span className={styles.trayCategoryBadge}>Slot 01</span>
-                          <span className={styles.trayCategoryTitle}>Outerwear Selection</span>
-                        </div>
-                        <div className={styles.trayChipsGrid}>
-                          {WARDROBE_OPTIONS.outerwear.map((item) => (
-                            <button
-                              key={item.id}
-                              type="button"
-                              className={`${styles.trayChip} ${
-                                userOutfit.outerwear === item.id ? styles.trayChipActive : ""
-                              }`}
-                              onClick={() =>
-                                setUserOutfit((prev) => ({ ...prev, outerwear: item.id }))
-                              }
-                              title={item.description}
-                            >
-                              <span>{item.name}</span>
-                              <span className={styles.trayChipWarmth}>+{item.warmth}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                    {/* Action buttons */}
+                    <div className={styles.metArtActionsRow}>
+                      <button
+                        type="button"
+                        onClick={handleCycleArtwork}
+                        className={styles.metArtCycleBtn}
+                        title="Discover another artwork paired with this weather condition"
+                      >
+                        <span>↺ Another Painting ({artworkIndex % artCategoryWorks.length + 1}/{artCategoryWorks.length})</span>
+                      </button>
 
-                      {/* Top Tray */}
-                      <div className={styles.traySection}>
-                        <div className={styles.trayHeader}>
-                          <span className={styles.trayCategoryBadge}>Slot 02</span>
-                          <span className={styles.trayCategoryTitle}>Top &amp; Layer Selection</span>
-                        </div>
-                        <div className={styles.trayChipsGrid}>
-                          {WARDROBE_OPTIONS.top.map((item) => (
-                            <button
-                              key={item.id}
-                              type="button"
-                              className={`${styles.trayChip} ${
-                                userOutfit.top === item.id ? styles.trayChipActive : ""
-                              }`}
-                              onClick={() =>
-                                setUserOutfit((prev) => ({ ...prev, top: item.id }))
-                              }
-                              title={item.description}
-                            >
-                              <span>{item.name}</span>
-                              <span className={styles.trayChipWarmth}>+{item.warmth}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                      <a
+                        href={currentArtwork.objectURL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.metArtViewOnMetBtn}
+                        title="View this artwork's accession page on metmuseum.org"
+                      >
+                        <span>The Met Collection ↗</span>
+                      </a>
 
-                      {/* Bottom Tray */}
-                      <div className={styles.traySection}>
-                        <div className={styles.trayHeader}>
-                          <span className={styles.trayCategoryBadge}>Slot 03</span>
-                          <span className={styles.trayCategoryTitle}>Bottoms Selection</span>
-                        </div>
-                        <div className={styles.trayChipsGrid}>
-                          {WARDROBE_OPTIONS.bottom.map((item) => (
-                            <button
-                              key={item.id}
-                              type="button"
-                              className={`${styles.trayChip} ${
-                                userOutfit.bottom === item.id ? styles.trayChipActive : ""
-                              }`}
-                              onClick={() =>
-                                setUserOutfit((prev) => ({ ...prev, bottom: item.id }))
-                              }
-                              title={item.description}
-                            >
-                              <span>{item.name}</span>
-                              <span className={styles.trayChipWarmth}>+{item.warmth}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Shoes Tray */}
-                      <div className={styles.traySection}>
-                        <div className={styles.trayHeader}>
-                          <span className={styles.trayCategoryBadge}>Slot 04</span>
-                          <span className={styles.trayCategoryTitle}>Footwear Selection</span>
-                        </div>
-                        <div className={styles.trayChipsGrid}>
-                          {WARDROBE_OPTIONS.shoes.map((item) => (
-                            <button
-                              key={item.id}
-                              type="button"
-                              className={`${styles.trayChip} ${
-                                userOutfit.shoes === item.id ? styles.trayChipActive : ""
-                              }`}
-                              onClick={() =>
-                                setUserOutfit((prev) => ({ ...prev, shoes: item.id }))
-                              }
-                              title={item.description}
-                            >
-                              <span>{item.name}</span>
-                              <span className={styles.trayChipWarmth}>+{item.warmth}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Accessory Tray */}
-                      <div className={styles.traySection}>
-                        <div className={styles.trayHeader}>
-                          <span className={styles.trayCategoryBadge}>Slot 05</span>
-                          <span className={styles.trayCategoryTitle}>Accessories Selection</span>
-                        </div>
-                        <div className={styles.trayChipsGrid}>
-                          {WARDROBE_OPTIONS.accessory.map((item) => (
-                            <button
-                              key={item.id}
-                              type="button"
-                              className={`${styles.trayChip} ${
-                                userOutfit.accessory === item.id ? styles.trayChipActive : ""
-                              }`}
-                              onClick={() =>
-                                setUserOutfit((prev) => ({ ...prev, accessory: item.id }))
-                              }
-                              title={item.description}
-                            >
-                              <span>{item.name}</span>
-                              <span className={styles.trayChipWarmth}>+{item.warmth}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                      <a
+                        href="https://metmuseum.github.io"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.metArtDocsBtn}
+                        title="Learn more about The Met Open Access REST API"
+                      >
+                        <span>The Met API ↗</span>
+                      </a>
                     </div>
-                  </section>
-                );
-              })()}
-            </>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Lightbox Modal for Art Inspection */}
+          {artworkZoomed && currentArtwork && (
+            <div
+              className={styles.metArtLightboxOverlay}
+              onClick={() => setArtworkZoomed(false)}
+              role="dialog"
+              aria-modal="true"
+              aria-label={`Expanded view of ${currentArtwork.title}`}
+            >
+              <div
+                className={styles.metArtLightboxCard}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={() => setArtworkZoomed(false)}
+                  className={styles.metArtLightboxClose}
+                  aria-label="Close artwork view"
+                >
+                  ✕
+                </button>
+                <img
+                  src={currentArtwork.primaryImage || currentArtwork.primaryImageSmall}
+                  alt={`${currentArtwork.title} by ${currentArtwork.artistDisplayName}`}
+                  className={styles.metArtLightboxImage}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (currentArtwork.remoteImage && target.src !== currentArtwork.remoteImage) {
+                      target.src = currentArtwork.remoteImage;
+                    }
+                  }}
+                />
+                <div className={styles.metArtLightboxCaption}>
+                  <div>
+                    <h3 className={styles.metArtLightboxTitle}>
+                      {currentArtwork.title} ({currentArtwork.objectDate})
+                    </h3>
+                    <p className={styles.metArtLightboxMeta}>
+                      {currentArtwork.artistDisplayName} · {currentArtwork.medium} · {currentArtwork.department}
+                    </p>
+                  </div>
+                  <a
+                    href={currentArtwork.objectURL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.metArtViewOnMetBtn}
+                  >
+                    View on MetMuseum.org ↗
+                  </a>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Expanded Lookbook Modal on Click */}

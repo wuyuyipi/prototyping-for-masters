@@ -34,6 +34,12 @@ export default function Home() {
       path: '/prototypes/weather',
       tag: '05 / Prototype'
     },
+    {
+      title: 'My bookshelf',
+      description: 'Reading tracker and literary archive in a gallery format powered by Notion',
+      path: '/prototypes/my-bookshelf',
+      tag: '06 / Integration'
+    },
     // Add your new prototypes here like this:
     // {
     //   title: 'Your new prototype',

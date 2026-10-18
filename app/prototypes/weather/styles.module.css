@@ -50,7 +50,7 @@
 .main {
   width: 85vw;
   height: 84vh;
-  max-width: 960px;
+  max-width: 1060px;
   background-color: #FFFFFF;
   border: 2px solid #1A2628;
   padding: 2.75rem 3rem;
@@ -67,7 +67,7 @@
 }
 
 .contentWrapper {
-  max-width: 820px;
+  max-width: 990px;
   margin: 0 auto;
 }
 
@@ -773,7 +773,7 @@
 
 .outfitGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
   margin-bottom: 1.5rem;
   position: relative;
@@ -1730,4 +1730,725 @@
     width: 100%;
     text-align: center;
   }
+}
+
+/* ==========================================================================
+   The Met Museum Atmospheric Artwork Section (metmuseum.github.io API)
+   ========================================================================== */
+
+.metArtSection {
+  margin-bottom: 2rem;
+}
+
+.metArtCard {
+  border: 2px solid #1A2628;
+  background-color: #FFFFFF;
+  box-shadow: 4px 4px 0 #1A2628;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+
+.metArtHeader {
+  display: flex;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  background-color: #1A2628;
+  color: #FFFFFF;
+  border-bottom: 2px solid #1A2628;
+}
+
+.metArtHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.metArtBadge {
+  background-color: #ED6A85;
+  color: #1A2628;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border: 1px solid #1A2628;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.metArtHeaderTitle {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+.metArtApiLink {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  color: #E2ECEE;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: color 0.15s ease;
+}
+
+.metArtApiLink:hover {
+  color: #ED6A85;
+}
+
+.metArtBodyGrid {
+  display: grid;
+  grid-template-columns: 290px 1fr;
+}
+
+@media (max-width: 768px) {
+  .metArtBodyGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.metArtVisualPane {
+  background-color: #F8F6F0;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1.5px solid #1A2628;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .metArtVisualPane {
+    border-right: none;
+    border-bottom: 1.5px solid #1A2628;
+  }
+}
+
+.metArtFrame {
+  position: relative;
+  width: 100%;
+  max-width: 250px;
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  box-shadow: 2px 2px 0 rgba(26, 38, 40, 0.15);
+  padding: 6px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  overflow: hidden;
+}
+
+.metArtFrame:hover {
+  transform: scale(1.02);
+  box-shadow: 4px 4px 0 #1A2628;
+}
+
+.metArtImage {
+  width: 100%;
+  height: 270px;
+  object-fit: cover;
+  display: block;
+  background-color: #ECE9E2;
+}
+
+.metArtZoomBadge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(26, 38, 40, 0.88);
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.metArtWeatherTag {
+  margin-top: 0.75rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #2D4346;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.metArtInfoPane {
+  padding: 1.4rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  background-color: #FFFFFF;
+}
+
+.metArtMatchPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: #ED6A85;
+  color: #1A2628;
+  border: 1.5px solid #1A2628;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 9px;
+  align-self: flex-start;
+}
+
+.metArtTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metArtTitle {
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 700;
+  font-style: italic;
+  color: #1A2628;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.metArtArtist {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1A2628;
+  margin: 0;
+}
+
+.metArtArtistBio {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: #556B6E;
+  margin: 0;
+}
+
+.metArtMetadataList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  padding: 0.7rem 0.9rem;
+  background-color: #F8FAF9;
+  border-left: 3px solid #ED6A85;
+  border-top: 1px dashed #D6DFE0;
+  border-right: 1px dashed #D6DFE0;
+  border-bottom: 1px dashed #D6DFE0;
+}
+
+.metArtMetaItem {
+  display: flex;
+  gap: 0.4rem;
+  line-height: 1.35;
+}
+
+.metArtMetaLabel {
+  font-weight: 700;
+  color: #1A2628;
+  min-width: 82px;
+}
+
+.metArtMetaValue {
+  color: #4A5F62;
+  word-break: break-word;
+}
+
+.metArtCuratorialBox {
+  background-color: #F4F7F7;
+  border: 1px solid #C3CDCE;
+  padding: 0.8rem 1rem;
+  position: relative;
+}
+
+.metArtCuratorialLead {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #0C4F56;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.metArtCuratorialText {
+  font-family: var(--font-serif);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: #1A2628;
+  font-style: italic;
+  margin: 0;
+}
+
+.metArtActionsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1.5px dashed #C3CDCE;
+}
+
+.metArtCycleBtn {
+  background-color: #FFFFFF;
+  color: #1A2628;
+  border: 1.5px solid #1A2628;
+  padding: 0.45rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.metArtCycleBtn:hover {
+  background-color: #FFE6EC;
+  transform: translate(-1px, -1px);
+}
+
+.metArtViewOnMetBtn {
+  background-color: #1A2628;
+  color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  padding: 0.45rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.metArtViewOnMetBtn:hover {
+  background-color: #ED6A85;
+  color: #1A2628;
+  transform: translate(-1px, -1px);
+}
+
+.metArtDocsBtn {
+  background-color: #EBF5F6;
+  color: #0C4F56;
+  border: 1.5px solid #0C4F56;
+  padding: 0.45rem 0.8rem;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.metArtDocsBtn:hover {
+  background-color: #0C4F56;
+  color: #FFFFFF;
+}
+
+/* Lightbox Modal */
+.metArtLightboxOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(26, 38, 40, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.metArtLightboxCard {
+  background-color: #FFFFFF;
+  border: 2px solid #1A2628;
+  box-shadow: 6px 6px 0 #1A2628;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+}
+
+.metArtLightboxClose {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: #1A2628;
+  color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  width: 34px;
+  height: 34px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease;
+  z-index: 10;
+}
+
+.metArtLightboxClose:hover {
+  background-color: #ED6A85;
+  color: #1A2628;
+}
+
+.metArtLightboxImage {
+  max-width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+  border: 1.5px solid #1A2628;
+  background-color: #F8F6F0;
+}
+
+.metArtLightboxCaption {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1.5px dashed #C3CDCE;
+}
+
+.metArtLightboxTitle {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-style: italic;
+  color: #1A2628;
+  margin: 0;
+}
+
+.metArtLightboxMeta {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: #4A5F62;
+  margin: 0.2rem 0 0 0;
+}
+
+/* ==========================================================================
+   Two-Column Fashion Layout: Styling Suggestions + Paper-Doll Studio
+   ========================================================================== */
+
+.fashionDuoRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: stretch;
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 920px) {
+  .fashionDuoRow {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.fashionDuoCol {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+}
+
+/* Paper-Doll Dressing Studio Card */
+.paperDollCard {
+  border: 2px solid #1A2628;
+  background-color: #FFFFFF;
+  box-shadow: 4px 4px 0 #1A2628;
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.15rem;
+  flex: 1;
+  box-sizing: border-box;
+}
+
+/* Mannequin Stage */
+.dollStage {
+  background-color: #F8F6F0;
+  border: 1.5px solid #1A2628;
+  padding: 0.9rem 0.85rem 0.75rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.05);
+  border-radius: 2px;
+}
+
+/* Speech Bubble */
+.dollSpeechBubble {
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  padding: 0.55rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #1A2628;
+  box-shadow: 2px 2px 0 #1A2628;
+  width: 90%;
+  margin-bottom: 0.75rem;
+  position: relative;
+  text-align: center;
+  line-height: 1.35;
+}
+
+.dollSpeechArrow {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 9px;
+  height: 9px;
+  background-color: #FFFFFF;
+  border-right: 1.5px solid #1A2628;
+  border-bottom: 1.5px solid #1A2628;
+}
+
+.dollFigureWrapper {
+  width: 100%;
+  max-width: 175px;
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+/* Readiness Metrics Row */
+.dollReadinessRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 0.65rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed #C3CDCE;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dollScorePill {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border: 1px solid #1A2628;
+}
+
+.dollScorePillPerfect {
+  background-color: #D2F0E3;
+  color: #0E5E3A;
+}
+
+.dollScorePillGood {
+  background-color: #E2EFF1;
+  color: #15555E;
+}
+
+.dollScorePillWarning {
+  background-color: #FFF2D6;
+  color: #8A5A0A;
+}
+
+.dollScorePillDanger {
+  background-color: #FFE0E6;
+  color: #9A1C34;
+}
+
+.dollWarmthMetric {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #4A5F62;
+}
+
+/* Category Tabs Bar */
+.dollCategoryTabs {
+  display: flex;
+  gap: 0.3rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  border-bottom: 1.5px solid #1A2628;
+  scrollbar-width: none;
+}
+
+.dollCategoryTab {
+  padding: 0.35rem 0.65rem;
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  color: #1A2628;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.dollCategoryTab:hover {
+  background-color: #F8FAF9;
+  transform: translate(-1px, -1px);
+}
+
+.dollCategoryTabActive {
+  background-color: #ED6A85;
+  color: #1A2628;
+  transform: translate(-1px, -1px);
+  box-shadow: 1px 1px 0 #1A2628;
+}
+
+/* Item Selector Grid */
+.dollItemsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+  max-height: 195px;
+  overflow-y: auto;
+  padding: 0.15rem;
+  scrollbar-width: thin;
+}
+
+@media (max-width: 500px) {
+  .dollItemsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.dollItemCard {
+  border: 1.5px solid #1A2628;
+  background-color: #FFFFFF;
+  padding: 0.45rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.25rem;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease;
+  min-height: 56px;
+}
+
+.dollItemCard:hover {
+  background-color: #F8FAF9;
+  transform: translate(-1px, -1px);
+  box-shadow: 1.5px 1.5px 0 #1A2628;
+}
+
+.dollItemCardActive {
+  background-color: #FFE6EC;
+  border-color: #ED6A85;
+  box-shadow: 2px 2px 0 #1A2628;
+}
+
+.dollItemCardName {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #1A2628;
+  line-height: 1.25;
+}
+
+.dollItemCardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.dollItemCardWarmth {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.62rem;
+  color: #587175;
+  font-weight: 600;
+}
+
+.dollItemCardEquipped {
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #ED6A85;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* Quick Actions Toolbar */
+.dollActionToolbar {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  padding-top: 0.55rem;
+  border-top: 1px dashed #C3CDCE;
+}
+
+.dollActionBtn {
+  background-color: #FFFFFF;
+  border: 1.5px solid #1A2628;
+  color: #1A2628;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.4rem 0.65rem;
+  cursor: pointer;
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+.dollActionBtn:hover {
+  background-color: #F1F4F4;
+  transform: translate(-1px, -1px);
+}
+
+.dollActionBtnAccent {
+  background-color: #ED6A85;
+  color: #1A2628;
+}
+
+.dollActionBtnAccent:hover {
+  background-color: #F28C9F;
 }
