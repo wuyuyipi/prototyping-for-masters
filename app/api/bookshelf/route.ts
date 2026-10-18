@@ -273,7 +273,8 @@ export async function GET(request: NextRequest) {
     request.headers.get("x-notion-database-id") ||
     searchParams.get("database_id") ||
     process.env.NOTION_DATABASE_ID ||
-    process.env.NOTION_DATA_SOURCE_ID;
+    process.env.NOTION_DATA_SOURCE_ID ||
+    "b307f6d2-826d-839a-8978-87f36a26de14";
 
   // If no credentials supplied yet, return demo mock data gracefully
   if (!apiKey || !apiKey.trim() || !rawDatabaseId || !rawDatabaseId.trim()) {
