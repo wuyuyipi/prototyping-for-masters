@@ -4,8 +4,8 @@ A tactile, interactive reading tracker and personal literary archive prototype b
 
 Instead of a generic static grid, this prototype reimagines your reading log as physical books on your desk:
 
-- **🔀 Pile Mode**: Books are scattered organically across a desk mat with natural rotations. You can click and drag books around freely to reorganize your desk, bring favorite books to the top, or click **"🎲 Toss & Scatter"** to reshuffle. Hovering over any book in the pile immediately reveals its detailed review and metadata in the side inspector box.
-- **📚 Tidy Mode**: Books neatly transform into an orderly vertical stack of horizontal spines resting on a study desk. Hovering over any spine pulls it out horizontally from the stack and instantly populates the detailed info box on the side.
+- **Pile Mode**: Books are scattered organically across a desk mat with natural rotations. You can click and drag books around freely to reorganize your desk, bring favorite books to the top, or click **"Toss & Scatter"** to reshuffle. Hovering over any book in the pile immediately reveals its detailed review and metadata in the side inspector box.
+- **Tidy Mode**: Books neatly transform into an orderly vertical stack of horizontal spines resting on a study desk. Hovering over any spine pulls it out horizontally from the stack and instantly populates the detailed info box on the side.
 - **Side Inspector Box**: A dedicated reading panel displaying the book's high-resolution cover (with 3D spine and paper shadow), title, author, Notion-colored genre badge, star rating, full reader review notes, and a direct link to open the page in Notion.
 
 ---
@@ -27,15 +27,11 @@ Your Notion database uses these 6 properties:
 
 ## Setup & Configuration
 
-Configure your Notion credentials in `.env.local` or directly within the prototype's user interface:
+Configure your Notion credentials in `.env.local` for local development, or in Vercel project environment variables for production:
 
-### In `.env.local`
+### In `.env.local` or Vercel Environment Variables
 ```bash
 NOTION_API_KEY=ntn_your_integration_token_here
 NOTION_DATABASE_ID=your_32_character_database_id_here
 ```
 
-### In-Browser Testing
-1. Click the **"Notion Setup" ⚙️** button in the top navigation.
-2. Paste your Notion API token and your database URL or ID.
-3. Click **"Connect & Save"** to test and view your live books immediately.

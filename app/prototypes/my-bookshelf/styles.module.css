@@ -793,18 +793,6 @@
   backdrop-filter: blur(3px);
 }
 
-.setupModalContent {
-  background-color: #FFFFFF;
-  border: 2px solid #1A2628;
-  width: 100%;
-  max-width: 680px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 8px 8px 0px rgba(26, 38, 40, 0.2);
-  padding: 2.25rem;
-  position: relative;
-}
-
 .modalCloseButton {
   position: absolute;
   top: 1rem;
@@ -825,104 +813,6 @@
 .modalCloseButton:hover {
   background-color: #ED6A85;
   color: #FFFFFF;
-}
-
-.setupModalTitle {
-  font-family: var(--font-serif);
-  font-size: 1.85rem;
-  font-weight: 700;
-  color: #1A2628;
-  margin-bottom: 0.5rem;
-}
-
-.setupModalSub {
-  font-size: 0.9rem;
-  color: #4A5F62;
-  margin-bottom: 1.5rem;
-  line-height: 1.5;
-}
-
-.credentialCard {
-  background-color: #FAFBFB;
-  border: 1.5px solid #1A2628;
-  padding: 1.25rem;
-  margin-bottom: 1.5rem;
-}
-
-.fieldGroup {
-  margin-bottom: 1rem;
-}
-
-.fieldLabel {
-  display: block;
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #1A2628;
-  margin-bottom: 0.35rem;
-}
-
-.fieldInput {
-  width: 100%;
-  padding: 0.55rem 0.85rem;
-  border: 1.5px solid #1A2628;
-  background-color: #FFFFFF;
-  font-family: monospace;
-  font-size: 0.85rem;
-  color: #1A2628;
-  box-sizing: border-box;
-}
-
-.fieldHint {
-  font-size: 0.75rem;
-  color: #7A8F92;
-  margin-top: 0.25rem;
-}
-
-.setupActionRow {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 1.25rem;
-  flex-wrap: wrap;
-}
-
-.saveButton {
-  padding: 0.55rem 1.25rem;
-  background-color: #0C4F56;
-  color: #FFFFFF;
-  border: 1.5px solid #1A2628;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.saveButton:hover {
-  background-color: #48A7AC;
-}
-
-.clearButton {
-  padding: 0.55rem 1.15rem;
-  background-color: #FFFFFF;
-  color: #1A2628;
-  border: 1.5px solid #1A2628;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.clearButton:hover {
-  background-color: #FFE2DD;
-  color: #991B1B;
-}
-
-.codeInline {
-  background-color: #F3F4F6;
-  border: 1px solid #D1D5DB;
-  padding: 0.15rem 0.4rem;
-  font-family: monospace;
-  font-size: 0.8rem;
 }
 
 .alertBox {

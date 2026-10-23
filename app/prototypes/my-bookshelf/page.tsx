@@ -60,13 +60,6 @@ export default function MyBookshelfPrototype() {
   const [selectedBook, setSelectedBook] = useState<BookItem | null>(null);
   const [hoveredBookId, setHoveredBookId] = useState<string | null>(null);
 
-  // Setup modal state
-  const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
-  const [inputApiKey, setInputApiKey] = useState<string>("");
-  const [inputDbId, setInputDbId] = useState<string>("");
-  const [isConnecting, setIsConnecting] = useState<boolean>(false);
-  const [connectMessage, setConnectMessage] = useState<{ text: string; isError: boolean } | null>(null);
-
   // Generate randomized positions for books in the pile
   const randomizePositions = useCallback((items: BookItem[]) => {
     if (items.length === 0) return;
@@ -155,8 +148,6 @@ export default function MyBookshelfPrototype() {
     if (typeof window !== "undefined") {
       const savedKey = localStorage.getItem("notion_user_api_key") || "";
       const savedDb = localStorage.getItem("notion_user_database_id") || "";
-      setInputApiKey(savedKey);
-      setInputDbId(savedDb);
       fetchBooks(savedKey, savedDb);
     } else {
       fetchBooks();
@@ -168,66 +159,11 @@ export default function MyBookshelfPrototype() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setSelectedBook(null);
-        setShowSetupModal(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
-
-  // Save credentials in modal
-  const handleSaveCredentials = async () => {
-    setIsConnecting(true);
-    setConnectMessage(null);
-
-    try {
-      const headers: Record<string, string> = {};
-      if (inputApiKey.trim()) headers["x-notion-api-key"] = inputApiKey.trim();
-      if (inputDbId.trim()) headers["x-notion-database-id"] = inputDbId.trim();
-
-      const res = await fetch("/api/bookshelf", { headers });
-      const data = await res.json();
-
-      if (data.success && !data.isDemo) {
-        localStorage.setItem("notion_user_api_key", inputApiKey.trim());
-        localStorage.setItem("notion_user_database_id", inputDbId.trim());
-        setBooks(data.books || []);
-        setIsDemo(false);
-        if (data.databaseTitle) setDatabaseTitle(data.databaseTitle);
-        randomizePositions(data.books || []);
-        setConnectMessage({
-          text: `Connected to "${data.databaseTitle}" with ${data.books?.length || 0} books!`,
-          isError: false,
-        });
-      } else if (data.error) {
-        setConnectMessage({
-          text: `${data.error} ${data.suggestion ? `(${data.suggestion})` : ""}`,
-          isError: true,
-        });
-      } else {
-        setConnectMessage({
-          text: "Saved. Previewing demo books.",
-          isError: false,
-        });
-      }
-    } catch (err: any) {
-      setConnectMessage({
-        text: err.message || "Failed to connect to Notion.",
-        isError: true,
-      });
-    } finally {
-      setIsConnecting(false);
-    }
-  };
-
-  const handleClearCredentials = () => {
-    localStorage.removeItem("notion_user_api_key");
-    localStorage.removeItem("notion_user_database_id");
-    setInputApiKey("");
-    setInputDbId("");
-    setConnectMessage({ text: "Reset to demo data.", isError: false });
-    fetchBooks("", "");
-  };
 
   // Drag handlers for the Pile
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>, bookId: string) => {
@@ -323,7 +259,6 @@ export default function MyBookshelfPrototype() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setSelectedBook(null);
-        setShowSetupModal(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -410,7 +345,6 @@ export default function MyBookshelfPrototype() {
                 onClick={() => setViewMode("pile")}
                 title="Scatter books on desk to drag around"
               >
-                <span>🔀</span>
                 <span>Pile</span>
               </button>
               <button
@@ -419,7 +353,6 @@ export default function MyBookshelfPrototype() {
                 onClick={() => setViewMode("tidy")}
                 title="Neat vertical stack showing book spines"
               >
-                <span>📚</span>
                 <span>Tidy</span>
               </button>
             </div>
@@ -431,20 +364,9 @@ export default function MyBookshelfPrototype() {
                 onClick={() => randomizePositions(books)}
                 title="Re-toss the pile across the desk"
               >
-                <span>🎲</span>
                 <span>Toss &amp; Scatter</span>
               </button>
             )}
-
-            <button
-              type="button"
-              className={styles.actionButton}
-              onClick={() => setShowSetupModal(true)}
-              title="Configure Notion Credentials"
-            >
-              <span>⚙️</span>
-              <span>Notion Setup</span>
-            </button>
 
             <button
               type="button"
@@ -453,7 +375,6 @@ export default function MyBookshelfPrototype() {
               title="Refresh database records"
               disabled={loading}
             >
-              <span>⟳</span>
               <span>{loading ? "..." : "Refresh"}</span>
             </button>
           </div>
@@ -846,93 +767,6 @@ export default function MyBookshelfPrototype() {
           </div>
         )}
       </div>
-
-      {/* Notion Credentials Setup Modal */}
-      {showSetupModal && (
-        <div
-          className={styles.modalBackdrop}
-          onClick={() => setShowSetupModal(false)}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className={styles.setupModalContent} onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              className={styles.modalCloseButton}
-              onClick={() => setShowSetupModal(false)}
-              aria-label="Close setup modal"
-            >
-              ✕
-            </button>
-
-            <h2 className={styles.setupModalTitle}>Notion Integration Setup</h2>
-            <p className={styles.setupModalSub}>
-              Connect your Notion database to power this bookshelf tracker. You can enter your credentials below to test immediately, or add them to <span className={styles.codeInline}>.env.local</span>.
-            </p>
-
-            <div className={styles.credentialCard}>
-              <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel} htmlFor="notion-api-key">
-                  Notion API Key / Internal Integration Token
-                </label>
-                <input
-                  id="notion-api-key"
-                  type="password"
-                  value={inputApiKey}
-                  onChange={(e) => setInputApiKey(e.target.value)}
-                  placeholder="ntn_... or secret_..."
-                  className={styles.fieldInput}
-                />
-                <p className={styles.fieldHint}>
-                  From <a href="https://www.notion.so/profile/integrations" target="_blank" rel="noopener noreferrer">notion.so/profile/integrations</a>
-                </p>
-              </div>
-
-              <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel} htmlFor="notion-db-id">
-                  Notion Database ID or URL
-                </label>
-                <input
-                  id="notion-db-id"
-                  type="text"
-                  value={inputDbId}
-                  onChange={(e) => setInputDbId(e.target.value)}
-                  placeholder="https://notion.so/{workspace}/{database_id}?v=... or 32-char ID"
-                  className={styles.fieldInput}
-                />
-                <p className={styles.fieldHint}>
-                  Paste the URL of your Notion database; we automatically extract the 32-character ID.
-                </p>
-              </div>
-
-              <div className={styles.setupActionRow}>
-                <button
-                  type="button"
-                  className={styles.saveButton}
-                  onClick={handleSaveCredentials}
-                  disabled={isConnecting}
-                >
-                  {isConnecting ? "Connecting to Notion..." : "Connect & Save"}
-                </button>
-
-                <button
-                  type="button"
-                  className={styles.clearButton}
-                  onClick={handleClearCredentials}
-                >
-                  Reset to Demo Data
-                </button>
-              </div>
-
-              {connectMessage && (
-                <div className={connectMessage.isError ? styles.alertBoxError : styles.alertBox}>
-                  {connectMessage.text}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
