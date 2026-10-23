@@ -202,9 +202,9 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 4rem 1.5rem;
+  padding: 1.5rem 1.5rem 7rem 1.5rem;
   max-width: 760px;
-  margin: auto;
+  margin: 0 auto;
   gap: 1.75rem;
   width: 100%;
   box-sizing: border-box;
