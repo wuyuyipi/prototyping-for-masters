@@ -68,9 +68,6 @@ export default async function InspirationLibraryPage() {
             <h1 className={styles.landingTitle}>
               Organize your creative world into boards.
             </h1>
-            <p className={styles.landingDescription}>
-              A minimalist, tactile Are.na &amp; Pinterest prototype. Collect typography, imagery, architecture, and bookmarks into dedicated spaces with full privacy control.
-            </p>
 
             <div className={styles.landingActionRow}>
               <Link
@@ -87,32 +84,6 @@ export default async function InspirationLibraryPage() {
               >
                 Sign In
               </Link>
-            </div>
-
-            <div className={styles.landingFeaturesGrid}>
-              <div className={styles.landingFeatureCard}>
-                <div className={styles.landingFeatureNumber}>01 / BETTER AUTH</div>
-                <h3 className={styles.landingFeatureTitle}>Secure Session Engine</h3>
-                <p className={styles.landingFeatureDesc}>
-                  Powered by Better Auth and Supabase Postgres. Every server action strictly verifies sessions to keep your boards secure.
-                </p>
-              </div>
-
-              <div className={styles.landingFeatureCard}>
-                <div className={styles.landingFeatureNumber}>02 / PRIVACY MODES</div>
-                <h3 className={styles.landingFeatureTitle}>Public &amp; Private Boards</h3>
-                <p className={styles.landingFeatureDesc}>
-                  Keep your work-in-progress inspirations private to yourself, or switch a board to public to share a read-only view with others.
-                </p>
-              </div>
-
-              <div className={styles.landingFeatureCard}>
-                <div className={styles.landingFeatureNumber}>03 / MASONRY ARCHIVE</div>
-                <h3 className={styles.landingFeatureTitle}>Tactile Visual Grid</h3>
-                <p className={styles.landingFeatureDesc}>
-                  Save imagery, source links, titles, and annotations into a responsive masonry layout inspired by Are.na channels.
-                </p>
-              </div>
             </div>
           </main>
         )}
