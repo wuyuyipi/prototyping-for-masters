@@ -40,6 +40,12 @@ export default function Home() {
       path: '/prototypes/my-bookshelf',
       tag: '06 / Integration'
     },
+    {
+      title: 'Inspiration Library',
+      description: 'Inspiration library prototype',
+      path: '/prototypes/inspiration-library',
+      tag: '07 / Prototype'
+    },
     // Add your new prototypes here like this:
     // {
     //   title: 'Your new prototype',

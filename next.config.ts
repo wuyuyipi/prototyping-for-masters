@@ -4,6 +4,11 @@ import path from "path";
 const nextConfig: NextConfig = {
   devIndicators: false,
   outputFileTracingRoot: path.join(__dirname),
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
+  },
   async redirects() {
     return [
       {

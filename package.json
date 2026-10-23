@@ -16,14 +16,17 @@
   "dependencies": {
     "@notionhq/client": "^5.27.1",
     "@types/canvas-confetti": "^1.9.0",
+    "better-auth": "^1.7.12",
     "canvas-confetti": "^1.9.3",
     "next": "^15.5.25",
+    "pg": "^8.23.1",
     "pixi.js": "^8.22.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "typescript": "^5"
