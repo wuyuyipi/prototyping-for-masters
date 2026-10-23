@@ -404,6 +404,76 @@ export async function createItemAction(
 }
 
 /**
+ * Update an existing inspo item's title, note, or link (owner only).
+ */
+export async function updateItemAction(
+  itemId: string,
+  boardId: string,
+  formData: FormData
+): Promise<{
+  success: boolean;
+  item?: Item;
+  error?: string;
+}> {
+  if (!isDatabaseConfigured()) {
+    return { success: false, error: "Database is not configured." };
+  }
+
+  const session = await getServerSession();
+  if (!session?.user?.id) {
+    return { success: false, error: "Unauthorized. Please sign in." };
+  }
+
+  const title = (formData.get("title") as string)?.trim();
+  const note = (formData.get("note") as string)?.trim() || null;
+  const linkUrl = (formData.get("link_url") as string)?.trim() || null;
+
+  if (!title) {
+    return { success: false, error: "Item title is required." };
+  }
+
+  const pool = getPool();
+  try {
+    // 1. Verify item exists and belongs to the authenticated user
+    const checkQuery = `
+      SELECT id, user_id, board_id, image_url
+      FROM items
+      WHERE id = $1 AND user_id = $2;
+    `;
+    const checkRes = await pool.query(checkQuery, [itemId, session.user.id]);
+    if (checkRes.rowCount === 0) {
+      return {
+        success: false,
+        error: "Item not found or you do not have permission to edit it.",
+      };
+    }
+
+    // 2. Perform the update
+    const updateQuery = `
+      UPDATE items
+      SET title = $3, note = $4, link_url = $5
+      WHERE id = $1 AND user_id = $2
+      RETURNING *;
+    `;
+    const updateRes = await pool.query(updateQuery, [
+      itemId,
+      session.user.id,
+      title,
+      note,
+      linkUrl,
+    ]);
+
+    revalidatePath(`/prototypes/inspiration-library/boards/${boardId}`);
+    revalidatePath("/prototypes/inspiration-library");
+    return { success: true, item: updateRes.rows[0] };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to update item";
+    console.error("Error updating item:", err);
+    return { success: false, error: message };
+  }
+}
+
+/**
  * Delete an item from a board (owner only).
  * If the item has an uploaded image in Supabase Storage, delete the file from storage.
  */

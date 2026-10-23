@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { Board, Item } from "../types";
 import {
   createItemAction,
+  updateItemAction,
   deleteItemAction,
   updateBoardAction,
   deleteBoardAction,
@@ -46,6 +47,15 @@ export function BoardDetailClient({
   const [editIsPublic, setEditIsPublic] = useState(board.is_public);
   const [boardLoading, setBoardLoading] = useState(false);
   const [boardError, setBoardError] = useState<string | null>(null);
+
+  // Inspo Detail Modal & Edit Item state
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [isEditingSelectedItem, setIsEditingSelectedItem] = useState(false);
+  const [editItemTitle, setEditItemTitle] = useState("");
+  const [editItemNote, setEditItemNote] = useState("");
+  const [editItemLinkUrl, setEditItemLinkUrl] = useState("");
+  const [isSavingItem, setIsSavingItem] = useState(false);
+  const [editItemError, setEditItemError] = useState<string | null>(null);
 
   // Helper to extract clean domain name from link
   const getDomainFromUrl = (url: string) => {
@@ -139,10 +149,70 @@ export function BoardDetailClient({
     const result = await deleteItemAction(itemId, board.id);
     if (result.success) {
       setItems(items.filter((i) => i.id !== itemId));
+      if (selectedItem?.id === itemId) {
+        setSelectedItem(null);
+        setIsEditingSelectedItem(false);
+      }
       router.refresh();
     } else {
       alert(result.error || "Could not delete item.");
     }
+  };
+
+  const handleOpenDetail = (item: Item) => {
+    setSelectedItem(item);
+    setIsEditingSelectedItem(false);
+    setEditItemTitle(item.title);
+    setEditItemNote(item.note || "");
+    setEditItemLinkUrl(item.link_url || "");
+    setEditItemError(null);
+  };
+
+  const handleCloseDetail = () => {
+    setSelectedItem(null);
+    setIsEditingSelectedItem(false);
+    setEditItemError(null);
+  };
+
+  const handleStartEdit = () => {
+    if (!selectedItem) return;
+    setEditItemTitle(selectedItem.title);
+    setEditItemNote(selectedItem.note || "");
+    setEditItemLinkUrl(selectedItem.link_url || "");
+    setEditItemError(null);
+    setIsEditingSelectedItem(true);
+  };
+
+  const handleSaveItemEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedItem) return;
+    if (!editItemTitle.trim()) {
+      setEditItemError("Name is required.");
+      return;
+    }
+
+    setIsSavingItem(true);
+    setEditItemError(null);
+
+    const formData = new FormData();
+    formData.append("title", editItemTitle.trim());
+    formData.append("note", editItemNote.trim());
+    formData.append("link_url", editItemLinkUrl.trim());
+
+    const result = await updateItemAction(selectedItem.id, board.id, formData);
+
+    if (!result.success || !result.item) {
+      setEditItemError(result.error || "Failed to save changes.");
+      setIsSavingItem(false);
+      return;
+    }
+
+    const updated = result.item;
+    setSelectedItem(updated);
+    setItems((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
+    setIsEditingSelectedItem(false);
+    setIsSavingItem(false);
+    router.refresh();
   };
 
   const handleUpdateBoard = async (e: React.FormEvent) => {
@@ -296,7 +366,11 @@ export function BoardDetailClient({
               : null;
 
             return (
-              <article key={item.id} className={styles.masonryItem}>
+              <article
+                key={item.id}
+                className={styles.masonryItem}
+                onClick={() => handleOpenDetail(item)}
+              >
                 {item.image_url && (
                   <div className={styles.itemImageWrapper}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -333,6 +407,7 @@ export function BoardDetailClient({
                           rel="noopener noreferrer"
                           className={styles.itemExternalLink}
                           title={`Open ${externalHref}`}
+                          onClick={(e) => e.stopPropagation()}
                         >
                           <span>{getDomainFromUrl(item.link_url!)}</span>
                           <span>↗</span>
@@ -343,7 +418,10 @@ export function BoardDetailClient({
 
                       {isOwner && (
                         <button
-                          onClick={() => handleDeleteItem(item.id, item.title)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteItem(item.id, item.title);
+                          }}
                           className={styles.itemDeleteButton}
                           type="button"
                           title="Delete item"
@@ -625,6 +703,249 @@ export function BoardDetailClient({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Inspo Detail & Inline Edit Modal */}
+      {selectedItem && (
+        <div className={styles.detailBackdrop} onClick={handleCloseDetail}>
+          <div
+            className={styles.detailCard}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            {/* Header */}
+            <div className={styles.detailHeaderBar}>
+              <span className={styles.detailHeaderBadge}>
+                {board.title} / Inspiration Detail
+              </span>
+              <button
+                onClick={handleCloseDetail}
+                className={styles.detailCloseButton}
+                type="button"
+                aria-label="Close detail modal"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className={styles.detailBody}>
+              {/* Image Pane */}
+              <div className={styles.detailMediaCol}>
+                {selectedItem.image_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={
+                      selectedItem.image_url.startsWith("http://") ||
+                      selectedItem.image_url.startsWith("https://") ||
+                      selectedItem.image_url.startsWith("data:")
+                        ? selectedItem.image_url
+                        : `/api/inspiration-library/image?path=${encodeURIComponent(
+                            selectedItem.image_url
+                          )}`
+                    }
+                    alt={selectedItem.title}
+                    className={styles.detailImage}
+                  />
+                ) : (
+                  <div className={styles.detailImagePlaceholder}>
+                    No Image Attached
+                  </div>
+                )}
+              </div>
+
+              {/* Info & Edit Pane */}
+              <div className={styles.detailInfoCol}>
+                {!isEditingSelectedItem ? (
+                  <>
+                    <div className={styles.detailInfoTop}>
+                      {/* Name / Title */}
+                      <div className={styles.detailFieldBlock}>
+                        <div className={styles.detailFieldHeader}>
+                          <span className={styles.detailFieldLabel}>Name</span>
+                          {isOwner && (
+                            <button
+                              type="button"
+                              onClick={handleStartEdit}
+                              className={styles.inlineEditButton}
+                              title="Edit name and description"
+                            >
+                              <span>✎</span>
+                              <span>Edit</span>
+                            </button>
+                          )}
+                        </div>
+                        <h2 className={styles.detailTitle}>{selectedItem.title}</h2>
+                      </div>
+
+                      {/* Description / Note */}
+                      <div className={styles.detailFieldBlock}>
+                        <div className={styles.detailFieldHeader}>
+                          <span className={styles.detailFieldLabel}>
+                            Description / Notes
+                          </span>
+                          {isOwner && (
+                            <button
+                              type="button"
+                              onClick={handleStartEdit}
+                              className={styles.inlineEditButton}
+                              title="Edit description"
+                            >
+                              <span>✎</span>
+                              <span>Edit</span>
+                            </button>
+                          )}
+                        </div>
+                        {selectedItem.note ? (
+                          <p className={styles.detailDescription}>
+                            {selectedItem.note}
+                          </p>
+                        ) : (
+                          <p className={styles.detailEmptyNote}>
+                            {isOwner
+                              ? "No description yet. Click 'Edit' to add notes or thoughts."
+                              : "No description provided."}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Source Link */}
+                      {selectedItem.link_url && (
+                        <div className={styles.detailFieldBlock}>
+                          <span className={styles.detailFieldLabel}>
+                            Source Link
+                          </span>
+                          <a
+                            href={
+                              selectedItem.link_url.startsWith("http")
+                                ? selectedItem.link_url
+                                : `https://${selectedItem.link_url}`
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.detailLinkBox}
+                          >
+                            <span>{getDomainFromUrl(selectedItem.link_url)}</span>
+                            <span>↗</span>
+                          </a>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Footer Row */}
+                    <div className={styles.detailFooterRow}>
+                      <span className={styles.detailDateBadge}>
+                        Added{" "}
+                        {new Date(selectedItem.created_at).toLocaleDateString(
+                          undefined,
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          }
+                        )}
+                      </span>
+
+                      {isOwner && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleDeleteItem(selectedItem.id, selectedItem.title)
+                          }
+                          className={styles.detailDeleteButton}
+                        >
+                          Delete this inspo
+                        </button>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  /* Edit Mode Form */
+                  <form
+                    onSubmit={handleSaveItemEdit}
+                    className={styles.detailEditForm}
+                  >
+                    {editItemError && (
+                      <div className={styles.formErrorMessage}>
+                        {editItemError}
+                      </div>
+                    )}
+
+                    <div className={styles.formFieldGroup}>
+                      <label
+                        className={styles.formLabel}
+                        htmlFor="edit-inspo-title"
+                      >
+                        Name *
+                      </label>
+                      <input
+                        id="edit-inspo-title"
+                        type="text"
+                        required
+                        value={editItemTitle}
+                        onChange={(e) => setEditItemTitle(e.target.value)}
+                        className={styles.formInput}
+                        autoFocus
+                      />
+                    </div>
+
+                    <div className={styles.formFieldGroup}>
+                      <label
+                        className={styles.formLabel}
+                        htmlFor="edit-inspo-note"
+                      >
+                        Description / Notes
+                      </label>
+                      <textarea
+                        id="edit-inspo-note"
+                        rows={6}
+                        value={editItemNote}
+                        onChange={(e) => setEditItemNote(e.target.value)}
+                        placeholder="Personal observations, design details, typographic notes..."
+                        className={styles.formTextarea}
+                      />
+                    </div>
+
+                    <div className={styles.formFieldGroup}>
+                      <label
+                        className={styles.formLabel}
+                        htmlFor="edit-inspo-link"
+                      >
+                        Source Link URL
+                      </label>
+                      <input
+                        id="edit-inspo-link"
+                        type="url"
+                        value={editItemLinkUrl}
+                        onChange={(e) => setEditItemLinkUrl(e.target.value)}
+                        placeholder="https://are.na/block/..."
+                        className={styles.formInput}
+                      />
+                    </div>
+
+                    <div className={styles.detailEditActions}>
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingSelectedItem(false)}
+                        className={styles.formCancelButton}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSavingItem}
+                        className={styles.formSubmitButton}
+                      >
+                        {isSavingItem ? "Saving..." : "Save Changes"}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}
