@@ -7,10 +7,16 @@ A tactile, personal visual archive and bookmarks channel prototype built with **
 ## Features
 
 - **Better Auth Authentication**:
-  - Secure email & password sign-up and sign-in.
+  - Secure email & password sign-up and sign-in (supporting email or username login).
+  - Every account includes a unique `@username` registered at sign-up.
   - Session verification strictly handled on the server for all pages and server actions.
   - Better Auth route mounted at `/api/auth/[...all]`.
   - Automatic session cookie handling via `nextCookies()`.
+- **Public Profiles (`/u/[username]`)**:
+  - Public profile page showcasing only that person's public boards (`is_public = true`).
+  - Private boards remain strictly hidden from public profiles and visitors.
+  - Profile banner displaying display name, `@username`, avatar initial, and public board count.
+  - Direct links to curator profiles from board detail headers.
 - **Boards & Channels**:
   - Curate ideas, references, and visual research into categorized boards.
   - **Privacy Control**:

@@ -250,7 +250,7 @@ export async function getBoardAndItems(boardId: string): Promise<{
   try {
     // 1. Fetch the board
     const boardQuery = `
-      SELECT b.*, u.name as owner_name
+      SELECT b.*, u.name as owner_name, u.username as owner_username
       FROM boards b
       LEFT JOIN "user" u ON u.id = b.user_id
       WHERE b.id = $1;
@@ -529,5 +529,96 @@ export async function deleteItemAction(
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Failed to delete item";
     return { success: false, error: message };
+  }
+}
+
+export interface PublicUserProfile {
+  user: {
+    id: string;
+    name: string | null;
+    username: string;
+    displayUsername?: string | null;
+    image?: string | null;
+    createdAt: string;
+  };
+  boards: (Board & { item_count: number })[];
+}
+
+/**
+ * Fetch a user's public profile and their public boards only.
+ * Private boards are strictly excluded.
+ */
+export async function getPublicProfile(username: string): Promise<{
+  profile?: PublicUserProfile;
+  notFound?: boolean;
+  error?: string;
+  isDbConfigured: boolean;
+}> {
+  if (!isDatabaseConfigured()) {
+    return {
+      notFound: false,
+      error: "DATABASE_URL is not set in .env.local.",
+      isDbConfigured: false,
+    };
+  }
+
+  const pool = getPool();
+  try {
+    // 1. Fetch user by case-insensitive username
+    const userQuery = `
+      SELECT id, name, username, "displayUsername", image, "createdAt"
+      FROM "user"
+      WHERE LOWER(username) = LOWER($1)
+      LIMIT 1;
+    `;
+    const userResult = await pool.query(userQuery, [username]);
+
+    if (userResult.rows.length === 0) {
+      return { notFound: true, isDbConfigured: true };
+    }
+
+    const userData = userResult.rows[0];
+
+    // 2. Fetch only public boards belonging to this user
+    const boardsQuery = `
+      SELECT 
+        b.id,
+        b.user_id,
+        b.title,
+        b.description,
+        b.is_public,
+        b.created_at,
+        COUNT(i.id)::int AS item_count
+      FROM boards b
+      LEFT JOIN items i ON i.board_id = b.id
+      WHERE b.user_id = $1 AND b.is_public = true
+      GROUP BY b.id
+      ORDER BY b.created_at DESC;
+    `;
+    const boardsResult = await pool.query(boardsQuery, [userData.id]);
+
+    return {
+      profile: {
+        user: {
+          id: userData.id,
+          name: userData.name,
+          username: userData.username,
+          displayUsername: userData.displayUsername,
+          image: userData.image,
+          createdAt: userData.createdAt ? userData.createdAt.toString() : "",
+        },
+        boards: boardsResult.rows,
+      },
+      notFound: false,
+      isDbConfigured: true,
+    };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Database error";
+    console.error("Error fetching public profile:", err);
+    return {
+      notFound: false,
+      error: message,
+      isDbConfigured: true,
+    };
   }
 }

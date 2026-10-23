@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
+import { username } from "better-auth/plugins";
 import { getPool } from "./db";
 
 export const auth = betterAuth({
@@ -13,7 +14,7 @@ export const auth = betterAuth({
       validateSchema: false,
     },
   },
-  plugins: [nextCookies()],
+  plugins: [nextCookies(), username()],
 });
 
 export type Session = typeof auth.$Infer.Session;

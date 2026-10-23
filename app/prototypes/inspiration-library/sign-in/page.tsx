@@ -18,14 +18,24 @@ export default function SignInPage() {
     setError(null);
     setLoading(true);
 
+    const identifier = email.trim();
+
     try {
-      const result = await authClient.signIn.email({
-        email,
-        password,
-      });
+      let result;
+      if (identifier.includes("@")) {
+        result = await authClient.signIn.email({
+          email: identifier,
+          password,
+        });
+      } else {
+        result = await authClient.signIn.username({
+          username: identifier.toLowerCase(),
+          password,
+        });
+      }
 
       if (result.error) {
-        setError(result.error.message || "Invalid email or password.");
+        setError(result.error.message || "Invalid username/email or password.");
         setLoading(false);
         return;
       }
@@ -65,15 +75,17 @@ export default function SignInPage() {
             <form onSubmit={handleSubmit}>
               <div className={styles.formFieldGroup}>
                 <label className={styles.formLabel} htmlFor="email">
-                  Email Address
+                  Email or Username
                 </label>
                 <input
                   id="email"
-                  type="email"
+                  type="text"
                   required
+                  autoCapitalize="none"
+                  autoCorrect="off"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com"
+                  placeholder="name@example.com or username"
                   className={styles.formInput}
                 />
               </div>

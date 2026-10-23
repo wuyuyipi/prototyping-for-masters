@@ -7,6 +7,7 @@ export interface Board {
   created_at: string;
   item_count?: number;
   owner_name?: string | null;
+  owner_username?: string | null;
 }
 
 export interface Item {

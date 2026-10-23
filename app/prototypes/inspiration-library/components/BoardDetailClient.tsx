@@ -287,7 +287,18 @@ export function BoardDetailClient({
 
               {board.owner_name && (
                 <span className={styles.boardOwnerTag}>
-                  Curated by <strong>{board.owner_name}</strong>
+                  Curated by{" "}
+                  {board.owner_username ? (
+                    <Link
+                      href={`/u/${board.owner_username}`}
+                      className={styles.curatorLink}
+                      title={`View @${board.owner_username}'s profile`}
+                    >
+                      <strong>{board.owner_name}</strong> (@{board.owner_username})
+                    </Link>
+                  ) : (
+                    <strong>{board.owner_name}</strong>
+                  )}
                 </span>
               )}
 

@@ -9,6 +9,7 @@ import styles from "../styles.module.css";
 export default function SignUpPage() {
   const router = useRouter();
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -18,6 +19,15 @@ export default function SignUpPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    const cleanUsername = username.trim().toLowerCase();
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(cleanUsername)) {
+      setError(
+        "Username must be 3–20 characters long and contain only letters, numbers, and underscores."
+      );
+      setLoading(false);
+      return;
+    }
 
     if (password.length < 6) {
       setError("Password must be at least 6 characters long.");
@@ -30,6 +40,7 @@ export default function SignUpPage() {
         name,
         email,
         password,
+        username: cleanUsername,
       });
 
       if (result.error) {
@@ -84,6 +95,26 @@ export default function SignUpPage() {
                   placeholder="Yiping Dong"
                   className={styles.formInput}
                 />
+              </div>
+
+              <div className={styles.formFieldGroup}>
+                <label className={styles.formLabel} htmlFor="username">
+                  Username
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  required
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
+                  placeholder="e.g. yiping, studio_design"
+                  className={styles.formInput}
+                />
+                <span className={styles.formHelperText}>
+                  Public profile URL: /u/{username || "username"}
+                </span>
               </div>
 
               <div className={styles.formFieldGroup}>

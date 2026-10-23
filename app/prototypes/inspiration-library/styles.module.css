@@ -94,6 +94,32 @@
   font-size: 0.85rem;
   font-weight: 600;
   color: #1A2628;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.userBadge:hover {
+  border-color: #1A2628;
+  background-color: #FFFFFF;
+}
+
+.userBadgeHandle {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #ED6A85;
+}
+
+.curatorLink {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dashed #1A2628;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.curatorLink:hover {
+  color: #ED6A85;
+  border-bottom-color: #ED6A85;
 }
 
 .userAvatar {
@@ -592,6 +618,13 @@
 .formInput:focus {
   border-color: #ED6A85;
   box-shadow: 0 0 0 2px rgba(237, 106, 133, 0.25);
+}
+
+.formHelperText {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: #6C7A78;
+  margin-top: 0.2rem;
 }
 
 .formTextarea {
